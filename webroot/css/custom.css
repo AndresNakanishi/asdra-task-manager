@@ -1,0 +1,296 @@
+/*----- MENU -----*/
+
+.asdra-logo{
+    max-height: 60px!important;
+    height: 100%!important;
+}
+
+.user-image{
+    max-height: 50px;
+    height: 100%;
+}
+
+/*----- UPDATE CONTAINER -----*/
+
+.updateContainerHeader{
+    width: 100%;
+}
+
+.updateContainerData{
+    margin-top:20px;
+    width: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.updateContainerData::-webkit-scrollbar {
+    width: 10px;
+}  
+
+.updateContainerData::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+.updateContainerData::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+.updateContainerData::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+/*----- DIV Container -----*/
+
+.updateContainerDataItem{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-top: 2px solid #000;
+}
+
+.updateContainerDataItem:last-child{
+    border-bottom: 2px solid #000;
+}
+
+.updateContainerDataItemUserData{
+    display: flex;
+    padding: 10px 0;
+}
+
+.updateContainerDataItemUserDataContainer{
+    display: flex;
+    flex-flow: column;
+    margin-left: 10px;
+}
+
+.updateContainerData-header{
+    display: flex;
+}
+
+.updateContainerData-username{
+    margin:0;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.updateContainerData-business{
+    margin:0;
+    margin-left: 10px;
+}
+
+.updateContainerData-lastTask{
+    margin:0;
+}
+
+.updateContainer-iconSize{
+    font-size: 20px;
+}
+
+.updateContainerDataItemActions{
+    display: flex;
+    width: 50px;
+    justify-content: space-between;
+}
+
+/*----- USERS CONTAINER -----*/
+
+.usersContainer{
+    width: 100%;
+}
+
+.usersContainerHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width:100%;
+}
+
+.usersContainerHeaderTitle{
+    margin: 0;
+}
+
+input[id="search-input"]{
+    width: 50%;
+}
+
+/*----- SECOND PAGE -----*/
+.usersContainerItemsLarge{
+    margin-top: 20px;
+    display: grid;
+    grid-gap: 15px;
+    padding: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    overflow: auto;
+    max-height: 600px;
+}
+
+.updateContainerData::-webkit-scrollbar {
+    width: 10px;
+}  
+
+.updateContainerData::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+.updateContainerData::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+.updateContainerData::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.userCard2{
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: .5em;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+}
+
+
+/*----- USER CARD -----*/
+
+.usersContainerItems{
+    display: flex;
+    padding: 20px 0px;
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+.usersContainerItems::-webkit-scrollbar {
+    width: 10px;
+}  
+
+.usersContainerItems::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+
+.usersContainerItems::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+
+.usersContainerItems::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
+.userCard{
+    width: 15%;
+    min-width: 15%;
+    margin-right: 20px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.usersContainerItemsImg{
+    width: 100%;
+    max-height: 100%;
+}
+
+.usersContainerItemsName{
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+/*----- Profile Container -----*/
+
+.profileContainer{
+    display: flex;
+    flex-flow: column;
+}
+
+.profileContainer-title{
+    font-weight: 700;
+}
+
+.profileContainerEdit{
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 70% 1fr;
+}
+
+.profileContainer-form{
+    display: flex;
+}
+
+.profileContainerTasks{
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.profileContainerTasks-tasks{
+    display: grid;
+    margin:0;
+    grid-gap: 15px;
+    padding: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.profileContainerTasks .task{
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.profileContainerTasks .task .icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin:0;
+    font-size: 4em;
+    background: #dddddd;
+    width: 100%;
+    height: 150px;
+}
+
+.tutorTable{
+    width: 70%;
+}
+
+
+/*----- LOGIN -----*/
+
+.form-signin {
+    width: 100%;
+    max-width: 330px;
+    padding: 15px;
+    margin: auto;
+}
+  
+.form-signin .checkbox {
+    font-weight: 400;
+}
+
+.form-signin .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
