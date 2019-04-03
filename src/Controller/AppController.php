@@ -22,7 +22,7 @@ class AppController extends Controller
             'authenticate' => [
                 'Form' => [
                     'fields' => [
-                        'username' => 'username',
+                        'username' => 'user',
                         'password' => 'password'
                     ]
                 ]

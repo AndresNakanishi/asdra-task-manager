@@ -15,25 +15,30 @@ class UsersController extends AppController
 
     public function login()
     {
-        $this->viewBuilder()->setLayout('login');
+        $this->viewBuilder()->setLayout('asdra-login');
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
-            if ($user && $user['active'] == true) {
+            if ($user) {
                 $this->Auth->setUser($user);
                 return $this->redirect($this->Auth->redirectUrl());
-            } elseif($user && $user['active'] == false) {
-                $this->Flash->error(__('El usuario ha sido desactivado por el administrador.'));
             } else {
                 $this->Flash->error(__('Usuario o Password inválido.'));
             }
         }
     }
 
+    // LOGOUT
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
+    }
+
+
     // DASHBOARD
 
     public function dashboard()
     {
-        $this->viewBuilder()->setLayout('system-default');
+        $this->viewBuilder()->setLayout('asdra-layout');
     }
 
     public function index()
