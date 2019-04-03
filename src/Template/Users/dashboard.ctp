@@ -13,7 +13,7 @@ $this->assign('title', $title);?>
                 </div>
                 <div class="updateContainerData">
                     <div class="updateContainerDataItem">
-                        <div class="updateContainerDataItemUserData">
+                        <a href="#" class="updateContainerDataItemUserData text-dark">
                             <div class="updateContainerDataItemUserDataImg">
                                 <img class="user-image rounded-circle" src="https://ui-avatars.com/api/?size=128&font-size=0.33&background=CCC&color=000&name=Pedro+Martinez" alt="User">
                             </div>
@@ -24,46 +24,10 @@ $this->assign('title', $title);?>
                                 </div>
                                 <p class="updateContainerData-lastTask">No tiene tarea registradas hoy</p>
                             </div>
-                        </div>
+                        </a>
                         <div class="updateContainerDataItemActions">
                             <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-phone"></i></a>
-                        </div>
-                    </div>
-                    <div class="updateContainerDataItem">
-                        <div class="updateContainerDataItemUserData">
-                            <div class="updateContainerDataItemUserDataImg">
-                                <img class="user-image rounded-circle" src="https://ui-avatars.com/api/?size=128&font-size=0.33&background=CCC&color=000&name=Marina+Molinari" alt="User">
-                            </div>
-                            <div class="updateContainerDataItemUserDataContainer">
-                                <div class="updateContainerData-header">
-                                    <p class="updateContainerData-username">Marina Molinari</p>
-                                    <p class="updateContainerData-business">(Empresa: UxorIT)</p>
-                                </div>
-                                <p class="updateContainerData-lastTask">Última tarea a la 07:23 hs - 2 tareas pendientes</p>
-                            </div>
-                        </div>
-                        <div class="updateContainerDataItemActions">
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-phone"></i></a>
-                        </div>
-                    </div>
-                    <div class="updateContainerDataItem">
-                        <div class="updateContainerDataItemUserData">
-                            <div class="updateContainerDataItemUserDataImg">
-                                <img class="user-image rounded-circle" src="https://ui-avatars.com/api/?size=128&font-size=0.33&background=CCC&color=000&name=Roberto+Rodriguez" alt="User">
-                            </div>
-                            <div class="updateContainerDataItemUserDataContainer">
-                                <div class="updateContainerData-header">
-                                    <p class="updateContainerData-username">Roberto Rodriguez</p>
-                                    <p class="updateContainerData-business">(Empresa: NexusCOM)</p>
-                                </div>
-                                <p class="updateContainerData-lastTask">Última tarea a la 07:45 hs - 1 tarea pendiente</p>
-                            </div>
-                        </div>
-                        <div class="updateContainerDataItemActions">
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-phone"></i></a>
+                            <a class="updateContainer-iconSize disabled" disabled><i class="fas fa-phone"></i></a>
                         </div>
                     </div>
                 </div>
@@ -85,12 +49,12 @@ $this->assign('title', $title);?>
                         <input type="search" class="form-control usersContainerSearch" id="search-input" placeholder="Buscar..." autocomplete="off" style="position: relative; vertical-align: top;">
                     </div>
                     <div class="usersContainerItems">
-                        <div class="userCard d-flex flex-column">
+                        <a href="#" class="userCard d-flex flex-column text-dark">
                             <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
                             <p class="usersContainerItemsName">
                                 Carlitos Ameguino
                             </p>
-                        </div>
+                        </a>
                         <div class="userCard d-flex flex-column">
                             <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
                             <p class="usersContainerItemsName">
