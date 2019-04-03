@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Auth\DefaultPasswordHasher;
+use Cake\ORM\TableRegistry;
+use App\Model\Entity\User;
 
 class UsersController extends AppController
 {
@@ -40,6 +43,10 @@ class UsersController extends AppController
     {
         $this->viewBuilder()->setLayout('asdra-layout');
     }
+
+
+    // ABM
+
 
     public function index()
     {
