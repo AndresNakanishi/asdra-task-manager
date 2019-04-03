@@ -1,11 +1,14 @@
+<?php $title = 'Dashboard';
+$this->assign('title', $title);?>
+
 <!-- Usuarios con tareas atrasadas -->
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body d-flex align-items-end flex-column">
-                <h6 class="actualDate"><b>27/03/2017</b></h6>
+                <h6 class="actualDate"><b><?= date('d/m/Y'); ?></b></h6>
                 <div class="updateContainerHeader d-flex justify-content-between align-items-center mt-3">
-                    <h5>Con tareas atrasadas a la 08:18 am</h5>
+                    <h5>Con tareas atrasadas a la <?= date('H:i A'); ?></h5>
                     <a class="updateContainer-iconSize" href="#"><i class="fas fa-sync-alt"></i></a>
                 </div>
                 <div class="updateContainerData">

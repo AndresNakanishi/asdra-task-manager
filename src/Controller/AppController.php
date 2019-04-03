@@ -43,4 +43,16 @@ class AppController extends Controller
         ]);
 
     }
+
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        if (!is_null($this->Auth->user('user_id'))) {
+            $user = User::get_user($this->Auth->user('user_id'));
+            $userProfileCode = $user->user_type;
+            $this->set('Auth', $this->Auth);
+            $this->set('userProfileCode', $userProfileCode);
+            $this->set('authUser', $user);
+        }
+    }
 }

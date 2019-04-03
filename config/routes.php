@@ -20,6 +20,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     // Routes
 
     $routes->connect('/', ['controller' => 'Users', 'action' => 'login']);
+    $routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
     $routes->connect('/dashboard', ['controller' => 'Users', 'action' => 'dashboard']);
 
     $routes->fallbacks(DashedRoute::class);

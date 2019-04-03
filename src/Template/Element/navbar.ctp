@@ -23,12 +23,15 @@
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">Logout</a>
                         </div>
                     </li>
-                    <li class="nav-item mr-5">
+                    <li class="nav-item">
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Reportes</a>
+                    </li>
+                    <li class="nav-item mr-5">
+                        <a class="nav-link" href="<?php echo $this->Url->build('/', true) ?>logout">Salir</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <img class="user-image rounded-circle" src="https://ui-avatars.com/api/?size=128&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
+                            <img class="user-image rounded-circle" src="<?= $authUser->photo ?>" alt="<?= $authUser->user ?>">
                         </a>
                     </li>
                 </ul>
