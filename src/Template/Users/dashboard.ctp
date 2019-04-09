@@ -12,24 +12,30 @@ $this->assign('title', $title);?>
                     <a class="updateContainer-iconSize" href="#"><i class="fas fa-sync-alt"></i></a>
                 </div>
                 <div class="updateContainerData">
-                    <div class="updateContainerDataItem">
-                        <a href="#" class="updateContainerDataItemUserData text-dark">
-                            <div class="updateContainerDataItemUserDataImg">
-                                <img class="user-image rounded-circle" src="https://ui-avatars.com/api/?size=128&font-size=0.33&background=CCC&color=000&name=Pedro+Martinez" alt="User">
-                            </div>
-                            <div class="updateContainerDataItemUserDataContainer">
-                                <div class="updateContainerData-header">
-                                    <p class="updateContainerData-username">Pedro Martinez</p>
-                                    <p class="updateContainerData-business">(Empresa: UxorIT)</p>
+                    <?php if (!empty($users['withPendingTasks'])): ?>
+                        <?php foreach ($users['withPendingTasks'] as $user): ?>
+                            <div class="updateContainerDataItem">
+                                <a href="<?= $this->Url->build('/', true) ?>profiles/<?= $user['id'] ?>" class="updateContainerDataItemUserData text-dark">
+                                    <div class="updateContainerDataItemUserDataImg">
+                                        <img class="user-image rounded-circle" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
+                                    </div>
+                                    <div class="updateContainerDataItemUserDataContainer">
+                                        <div class="updateContainerData-header">
+                                            <p class="updateContainerData-username"><?= $user['name'] ?></p>
+                                            <p class="updateContainerData-business">(Empresa: <?= $user['company'] ?>)</p>
+                                        </div>
+                                        <p class="updateContainerData-lastTask"><?= count($user['tasks']) ?> Tareas Pendientes</p>
+                                    </div>
+                                </a>
+                                <div class="updateContainerDataItemActions">
+                                    <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
+                                    <a class="updateContainer-iconSize disabled" disabled><i class="fas fa-phone"></i></a>
                                 </div>
-                                <p class="updateContainerData-lastTask">No tiene tarea registradas hoy</p>
                             </div>
-                        </a>
-                        <div class="updateContainerDataItemActions">
-                            <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
-                            <a class="updateContainer-iconSize disabled" disabled><i class="fas fa-phone"></i></a>
-                        </div>
-                    </div>
+                        <?php endforeach ?>
+                    <?php else: ?>
+                        No hay personas con tareas pendientes
+                    <?php endif ?>
                 </div>
             </div>
         </div>
@@ -46,57 +52,27 @@ $this->assign('title', $title);?>
                 <div class="card-body">
                     <div class="usersContainerHeader">
                         <h3 class="usersContainerHeaderTitle">Con tareas al día</h3>
-                        <input type="search" class="form-control usersContainerSearch" id="search-input" placeholder="Buscar..." autocomplete="off" style="position: relative; vertical-align: top;">
+                        <?= $this->Form->create(null, ['class' => 'form-inline', 'url' => ['action' => 'dashboard']]) ?>
+                            <?php if (isset($filter)): ?>
+                                <input type="search" class="form-control usersContainerSearch" id="search-input" name="filter" placeholder="Buscar..." autocomplete="off" value="<?= $filter ?>" style="position: relative; vertical-align: top;">
+                            <?php else: ?>
+                                <input type="search" class="form-control usersContainerSearch" id="search-input" name="filter" placeholder="Buscar..." autocomplete="off" style="position: relative; vertical-align: top;">
+                            <?php endif ?>
+                        <?= $this->Form->end() ?>
                     </div>
                     <div class="usersContainerItems">
-                        <a href="#" class="userCard d-flex flex-column text-dark">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </a>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
-                        <div class="userCard d-flex flex-column">
-                            <img class="usersContainerItemsImg rounded-circle" src="https://ui-avatars.com/api/?size=256&font-size=0.33&background=CCC&color=000&name=Yolanda+Ortiz" alt="User">
-                            <p class="usersContainerItemsName">
-                                Carlitos Ameguino
-                            </p>
-                        </div>
+                        <?php if (!empty($users['withoutPendingTasks'])): ?>
+                            <?php foreach ($users['withoutPendingTasks'] as $user): ?>
+                                <a href="<?= $this->Url->build('/', true) ?>profiles/<?= $user['id'] ?>" class="userCard d-flex flex-column text-dark">
+                                    <img class="usersContainerItemsImg rounded-circle" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
+                                    <p class="usersContainerItemsName">
+                                        <?= $user['name'] ?>
+                                    </p>
+                                </a>
+                            <?php endforeach ?>
+                        <?php else: ?>
+                            No hay usuarios con tareas al día
+                        <?php endif ?>
                     </div>
                 </div>
             </div>

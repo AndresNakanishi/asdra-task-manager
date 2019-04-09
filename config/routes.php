@@ -21,7 +21,10 @@ Router::scope('/', function (RouteBuilder $routes) {
 
     $routes->connect('/', ['controller' => 'Users', 'action' => 'login']);
     $routes->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+    $routes->connect('/init-dashboard', ['controller' => 'Users', 'action' => 'initDashboard']);
     $routes->connect('/dashboard', ['controller' => 'Users', 'action' => 'dashboard']);
+    $routes->connect('/init-in-charge', ['controller' => 'Users', 'action' => 'initInCharge']);
+    $routes->connect('/in-charge', ['controller' => 'Users', 'action' => 'inCharge']);
 
     $routes->fallbacks(DashedRoute::class);
 });
