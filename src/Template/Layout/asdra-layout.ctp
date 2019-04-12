@@ -4,7 +4,7 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        TASK MANAGER |
+        Asdra TM |
         <?= $this->fetch('title') ?>
     </title>
     <?= $this->Html->meta('favicon.gif', 'img/favicon.gif', ['type' => 'icon']); ?>

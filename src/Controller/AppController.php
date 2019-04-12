@@ -32,11 +32,11 @@ class AppController extends Controller
                 'action' => 'login'
             ],
             'loginRedirect' => [
-                'controller' => 'users',
-                'action' => 'dashboard',
+                'controller' => 'Users',
+                'action' => 'init-dashboard',
             ],
             'logoutRedirect' => [
-                'controller' => 'users',
+                'controller' => 'Users',
                 'action' => 'login',
             ],
             'authError' => 'No tiene permiso para acceder a la página solicitada.',

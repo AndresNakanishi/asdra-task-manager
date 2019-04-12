@@ -5,11 +5,11 @@ $this->assign('title', $title);?>
 
     <label for="inputUser" class="sr-only">Usuario</label>
 
-    <input type="text" id="inputUser" name="user" class="form-control" placeholder="Usuario" required autofocus>
+    <input type="text" id="user" name="user" class="form-control" placeholder="Usuario" required autofocus>
 
     <label for="inputPassword" class="sr-only">Contraseña</label>
 
-    <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Contraseña" required>
+    <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
 
     <div class="checkbox mb-3">
         <label>

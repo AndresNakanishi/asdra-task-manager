@@ -6,6 +6,7 @@ use Cake\Auth\DefaultPasswordHasher;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use App\Model\Entity\User;
 
 class UsersController extends AppController
@@ -16,7 +17,8 @@ class UsersController extends AppController
         $this->Auth->allow('login');
     }
 
-    // LOGIN
+    // Login
+    // Author: Ricardo Andrés Nakanishi || Last Update 03/04/2019
 
     public function login()
     {
@@ -32,29 +34,33 @@ class UsersController extends AppController
         }
     }
 
-    // LOGOUT
+    // Logout
+    // Author: Ricardo Andrés Nakanishi || Last Update 03/04/2019 
+
     public function logout()
     {
         return $this->redirect($this->Auth->logout());
     }
 
-
-    // INIT DASHBOARD
-
+    // Dashboard Initialization - Screen 1
+    // Purpose: Clear session
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
+    
     public function initDashboard()
     {
         $this->autoRender = false;
-        $session = $this->request->session();
+        $session = $this->getRequest()->getSession();
         $session->delete('is_search');
         $session->delete('filter');
         return $this->redirect(['action' => 'dashboard']);
     }
 
-    // DASHBOARD
-
+    // Dashboard - Screen 1
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
+    
     public function dashboard()
     {
-        $session = $this->request->session();
+        $session = $this->getRequest()->getSession();
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
 
@@ -71,37 +77,38 @@ class UsersController extends AppController
             
             // Get Users
             $users = $this->getUsers($this->Auth->user('user_id'), $filter);
-
+            
             $this->set('is_search', 1);
             $this->set('filter', $filter);
         } else {
             $users = $this->getUsers($this->Auth->user('user_id'), null);
         }
 
-
-
         // Set Users
         $this->set(compact('users'));
     }
 
+    // People in Charge Initialization - Screen 2
+    // Purpose: Clear session
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
 
     public function initInCharge()
     {
         $this->autoRender = false;
-        $session = $this->request->session();
+        $session = $this->getRequest()->getSession();
         $session->delete('is_search');
         $session->delete('filter');
         return $this->redirect(['action' => 'inCharge']);
     }
 
-    // Personas a Cargo
+    // People in Charge - Screen 2
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
 
     public function inCharge()
     {
-        $session = $this->request->session();
+        $session = $this->getRequest()->getSession();
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
-
         // Búsqueda
 
         if ($this->request->is('post')) {
@@ -126,60 +133,103 @@ class UsersController extends AppController
         $this->set(compact('users'));
     }
 
-        // ABM
-
-
-    public function index()
+    // Person - Screen 3
+    // Author: Ricardo Andrés Nakanishi || Last Update: 09/04/2019
+    public function person($id = null)
     {
-        $this->paginate = [
-            'contain' => ['Locales']
-        ];
-        $users = $this->paginate($this->Users);
-
-        $this->set(compact('users'));
-    }
-
-    public function view($id = null)
-    {
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        
+        // Get User
         $user = $this->Users->get($id, [
-            'contain' => ['Locales']
+            'contain' => []
         ]);
 
-        $this->set('user', $user);
+        // Get Person Supervisor (Just for safety)
+        // Purpose: The supervisor MUST be the user
+        $supTable = TableRegistry::get('supervisors');
+        $supervisor = $supTable->find('all', ['conditions' => [
+            ['supervisor_id' => $this->Auth->user('user_id')],
+            ['person_id' => $id]
+        ]])->first();
+
+        // Same as above, if supervisor == null means that the user
+        // IN NOT THE PERSON SUPERVISOR
+        if ($supervisor == null) {
+            return $this->redirect( Router::url( $this->referer(), true ) );
+        }
+
+        // All supervisiors
+        
+        $supervisors = $supTable->find('all', ['conditions' => ['person_id' => $user->user_id]])
+        ->select([
+            'id' => 'users.user_id',
+            'name' => 'users.name',
+            'phone' => 'users.phone',
+            'role' => 'supervisors.rol'
+        ])
+        ->join([[
+            'table' => 'users',
+            'alias' => 'users',
+            'type' => 'INNER',
+            'conditions' => ['supervisors.supervisor_id = users.user_id']
+        ]])->order(['supervisors.rol' => 'DESC'])->all();
+
+        $this->set(compact('user','supervisors'));
     }
 
+
+    // Add Person || Story 3
+    // Author: Ricardo Andrés Nakanishi
     public function add()
     {
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        // Set User
         $user = $this->Users->newEntity();
-        if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            // Set Photo
+            $data['user_type'] = 'PER';
+            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            $user = $this->Users->patchEntity($user, $data);
+            if ($this->Users->save($user)) {
+                $this->createSupevisorTutorRelationship($user, $this->Auth->user('user_id'));
+                $this->Flash->success(__('The user has been saved.'));
+            } else {
+                $this->Flash->error(__('The user could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            return $this->redirect(['action' => 'inCharge']);
         }
-        $locales = $this->Users->Locales->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'locales'));
+        $this->set(compact('user'));
     }
 
     public function edit($id = null)
     {
-        $user = $this->Users->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+        $this->autoRender = false;
+        $user = $this->Users->get($id);
 
-                return $this->redirect(['action' => 'index']);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            // Set Photo
+            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            $user = $this->Users->patchEntity($user, $data);
+            if ($this->Users->save($user)) {
+                // Success
+                $this->Flash->success(__('The user has been saved.'));
+            } else {
+                // Fail
+                $this->Flash->error(__('The user could not be saved. Please, try again.'));
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            return $this->redirect(['action' => 'person',$user->user_id]);
         }
-        $locales = $this->Users->Locales->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'locales'));
     }
 
     public function delete($id = null)
@@ -193,6 +243,30 @@ class UsersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+
+    //
+
+    private function createSupevisorTutorRelationship($user, $supervisor)
+    {
+        $this->autoRender = false;
+        $supTable = TableRegistry::get('supervisors');
+        $insert = $supTable->query();
+        $insert->insert([
+            'person_id',
+            'supervisor_id',
+            'rol',
+            'company_id'
+        ])->values([
+            'person_id' => $user->user_id,
+            'supervisor_id' => $supervisor,
+            'rol' => 'TUT',
+            'company' => null
+        ])
+        ->execute();
+
+        return true;
     }
 
 
@@ -235,6 +309,7 @@ class UsersController extends AppController
     // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019  
     private function getSupervisedUsers($id, $filter = null)
     {
+        $filter = strtoupper($filter);
         $usersTable = TableRegistry::get('users');
         $users = $usersTable->find()
             ->select([
@@ -248,7 +323,7 @@ class UsersController extends AppController
                 'AND' =>
                     ['supervisors.supervisor_id' => $id],
                     ['supervisors.rol' => 'TUT'],
-                    ['users.name LIKE' => '%'.$filter.'%']
+                    ['UPPER(users.name) LIKE' => '%'.$filter.'%']
             ])
             ->join([[
                 'table' => 'supervisors',
@@ -262,7 +337,7 @@ class UsersController extends AppController
                 'type' => 'LEFT OUTER',
                 'conditions' => ['companies.company_id = supervisors.company_id']
             ]])
-            ->hydrate(false)
+            ->enableHydration(false)
             ->toList();
 
         return $users;
@@ -309,5 +384,46 @@ class UsersController extends AppController
         $response = $statement->fetchAll();
 
         return $response;
+    }
+
+    // Set or Update User Photo / Avatar
+    // Author: Ricardo Andrés Nakanishi || Last Update: 10/04/2019
+    private function setAvatar($avatar, $name){
+        // Esta URL se usará una vez se configure de manera correcta la escritura.
+        // $url = 'http://190.188.102.60:8089/organizerApi/public/';
+        $url = WWW_ROOT;
+        // Use a HASH with SHA1 to save our img
+        $hash = sha1($avatar["tmp_name"].$name);
+        // We'll save our users img in this folder
+        $imgFolder = "img/users/";
+        // Link that we are going to save
+        $folder = $url . $imgFolder;
+        // Out FileName
+        $fileName = "$hash.jpg";
+        // Temporal File
+        $fileTmp = $avatar["tmp_name"];
+        // Entire URL
+        $fileDest = $folder . $fileName;
+            
+        if ($avatar['name'] == '') {
+            if (!file_exists($fileDest)) {   
+                $newAvatar = 'https://ui-avatars.com/api/?size=256&font-size=0.33&background=0D8ABC&color=fff&name='.$name;
+            }
+        } else {
+            if (!is_dir($folder)) {
+                mkdir($folder, 0777, true);
+            }
+
+            if (file_exists($fileDest)) {   
+                unlink($fileDest);
+                $success = move_uploaded_file($fileTmp, $fileDest);                         
+            } else {
+                $success = move_uploaded_file($fileTmp, $fileDest);                         
+            }
+
+            // Entire URL or Half
+            $newAvatar = $imgFolder . $fileName;
+        }
+        return $newAvatar;
     }
 }

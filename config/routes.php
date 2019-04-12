@@ -25,6 +25,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/dashboard', ['controller' => 'Users', 'action' => 'dashboard']);
     $routes->connect('/init-in-charge', ['controller' => 'Users', 'action' => 'initInCharge']);
     $routes->connect('/in-charge', ['controller' => 'Users', 'action' => 'inCharge']);
+    $routes->connect('/person/edit/*', ['controller' => 'Users', 'action' => 'person']);
+    $routes->connect('/person/add', ['controller' => 'Users', 'action' => 'add']);
 
     $routes->fallbacks(DashedRoute::class);
 });

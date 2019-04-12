@@ -66,7 +66,7 @@ class User extends Entity
             return $hasher->hash($value);
         }
     }
-
+    
     /**
      * Obtiene la instancia de un usuario a partir de su id.
      *
