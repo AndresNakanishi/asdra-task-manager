@@ -1,6 +1,16 @@
-<?php
-if (!isset($params['escape']) || $params['escape'] !== false) {
-    $message = h($message);
-}
-?>
-<div class="message success" onclick="this.classList.add('hidden')"><?= $message ?></div>
+<script type="text/javascript">
+	$.notify({
+		message: "<?= $message ?>"
+	},{
+		allow_dismiss: true,
+		type: 'primary',
+		animate: {
+			enter: 'animated fadeInDown',
+			exit: 'animated fadeOutUp'
+		},
+		placement: {
+			from: 'top',
+			align: 'center'
+		}
+	});
+</script>

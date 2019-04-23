@@ -23,6 +23,9 @@ class UsersController extends AppController
     public function login()
     {
         $this->viewBuilder()->setLayout('asdra-login');
+        if ($this->Auth->user('user_id') !== null) {
+            return $this->redirect(['action' => 'initDashboard']);
+        }
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
             if ($user) {
@@ -202,13 +205,47 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->createSupevisorTutorRelationship($user, $this->Auth->user('user_id'));
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->success(__('Agregaste una persona a la base de datos.'));
             } else {
-                $this->Flash->error(__('The user could not be saved. Please, try again.'));
+                $this->Flash->error(__('Hubo un error! Por favor, intente más tarde.'));
             }
             return $this->redirect(['action' => 'inCharge']);
         }
         $this->set(compact('user'));
+    }
+
+    // Add Tutor Screen 4
+    // Author: Ricardo Andrés Nakanishi || Last Update: 15/04/2019
+    public function addTutor($id = null)
+    {
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        // Set User
+        $user = $this->Users->newEntity();
+
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            // Set Photo
+            $rol = $data['rol'];
+            unset($data['rol']);
+            $company = $data['company'];
+            unset($data['company']);
+            $data['user_type'] = 'PER';
+            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            $user = $this->Users->patchEntity($user, $data);
+            if ($this->Users->save($user)) {
+                $this->createSupevisorRelationship($id, $user, $rol, $company);
+                $this->Flash->success(__('Agregaste correctamente un tutor.'));
+            } else {
+                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            }
+            return $this->redirect(['action' => 'person',$id]);
+        }
+        $companies = TableRegistry::get('companies')->find('list');
+        $this->set(compact('user','companies'));
     }
 
     public function edit($id = null)
@@ -223,31 +260,82 @@ class UsersController extends AppController
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 // Success
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->success(__('Los cambios han sido guardados.'));
             } else {
                 // Fail
-                $this->Flash->error(__('The user could not be saved. Please, try again.'));
+                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
             }
             return $this->redirect(['action' => 'person',$user->user_id]);
         }
     }
 
+    // Delete User || Screen 3
+    // Author: Ricardo Andrés Nakanishi || Last Update 10/04/2019
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
+        $supervisorTable = TableRegistry::get('supervisors');  
+        $supervisor = $supervisorTable->find('all', ['conditions' => ['person_id' => $id]])->all();
+        foreach ($supervisor as $relation) {
+            $supervisorTable->delete($relation);
+        }
         if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
+            $this->Flash->success(__('El usuario ha sido correctamente borrado del sistema.'));
         } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect( Router::url( $this->referer(), true ) );
+    }
+
+    // Delete Tutor || Screen 3
+    // Author: Ricardo Andrés Nakanishi || Last Update 12/04/2019
+    public function deleteTutor($id = null, $user_id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $user = $this->Users->get($id);
+        $supervisorTable = TableRegistry::get('supervisors');  
+        $supervisor = $supervisorTable->find('all', ['conditions' => ['supervisor_id' => $id, 'person_id' => $user_id]])->all();
+        foreach ($supervisor as $relation) {
+            $supervisorTable->delete($relation);
+        }
+        if ($this->Users->delete($user)) {
+            $this->Flash->success(__('El tutor ha sido correctamente eliminado.'));
+        } else {
+            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+        }
+
+        return $this->redirect( Router::url( $this->referer(), true ) );
+    }
+
+    // Profile - Screen 11
+    // Author: Ricardo Andrés Nakanishi || Last Update: 22/04/2019
+    public function profile($id = null)
+    {
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        
+        // Get User
+        $user = $this->Users->get($id, [
+            'contain' => []
+        ]);
+
+        // Same as above, if supervisor == null means that the user
+        // IN NOT THE PERSON SUPERVISOR
+        if ($this->Auth->user('user_id') != $id) {
+            return $this->redirect( Router::url( $this->referer(), true ) );
+        }
+
+        $this->set(compact('user'));
     }
 
 
-    //
-
+    // Crea un Supervisión de Tipo Tutor
+    // Author: Ricardo Andrés Nakanishi || Last Update: 11/04/2019
     private function createSupevisorTutorRelationship($user, $supervisor)
     {
         $this->autoRender = false;
@@ -269,6 +357,28 @@ class UsersController extends AppController
         return true;
     }
 
+        // Crea un Supervisión de Tipo Tutor
+    // Author: Ricardo Andrés Nakanishi || Last Update: 11/04/2019
+    private function createSupevisorRelationship($person, $supervisor, $rol, $company = null)
+    {
+        $this->autoRender = false;
+        $supTable = TableRegistry::get('supervisors');
+        $insert = $supTable->query();
+        $insert->insert([
+            'person_id',
+            'supervisor_id',
+            'rol',
+            'company_id'
+        ])->values([
+            'person_id' => $person,
+            'supervisor_id' => $supervisor->user_id,
+            'rol' => $rol,
+            'company' => $company
+        ])
+        ->execute();
+
+        return true;
+    }
 
     // Returns all persons supervised by the user, with and without pending tasks
     // ID = Supervisor ID

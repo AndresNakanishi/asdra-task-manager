@@ -9,6 +9,7 @@
     </title>
     <?= $this->Html->meta('favicon.gif', 'img/favicon.gif', ['type' => 'icon']); ?>
     <?= $this->Html->css('bootstrap.min.css') ?>
+    <?= $this->Html->css('animate.css') ?>
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <style>
@@ -29,12 +30,13 @@
     </style>
 </head>
 <body class="text-center d-flex justify-content-center align-items-center" style="height: 100vh">
-    <?= $this->Flash->render() ?>
     <!-- Content -->
     <?= $this->fetch('content') ?>
     <!-- Javascript -->
     <?= $this->Html->script('jquery.js') ?>
+    <?= $this->Html->script('bootstrap-notify.js') ?>
     <?= $this->Html->script('bootstrap.js') ?>
     <?= $this->fetch('script') ?>
+    <?= $this->Flash->render() ?>
 </body>
 </html>

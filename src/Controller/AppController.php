@@ -33,7 +33,7 @@ class AppController extends Controller
             ],
             'loginRedirect' => [
                 'controller' => 'Users',
-                'action' => 'init-dashboard',
+                'action' => 'dashboard',
             ],
             'logoutRedirect' => [
                 'controller' => 'Users',

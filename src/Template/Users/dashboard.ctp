@@ -16,7 +16,7 @@ $this->assign('title', $title);?>
                 <?= $this->Form->end() ?>
                 <div class="updateContainerHeader d-flex justify-content-between align-items-center mt-3">
                     <h5>Con tareas atrasadas a la <?= date('H:i A'); ?></h5>
-                    <a class="updateContainer-iconSize" href="#"><i class="fas fa-sync-alt"></i></a>
+                    <a class="updateContainer-iconSize" href="#" onclick="location.reload();"><i class="fas fa-sync-alt"></i></a>
                 </div>
                 <div class="updateContainerData">
                     <?php if (!empty($users['withPendingTasks'])): ?>

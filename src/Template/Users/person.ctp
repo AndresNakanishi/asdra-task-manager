@@ -1,5 +1,4 @@
-<?php $title = $user->name;
-$this->assign('title', $title);?>
+<?php $this->assign('title', $user->name);?>
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
@@ -8,6 +7,9 @@ $this->assign('title', $title);?>
                 <div class="profileContainer-content mt-3">
                     <div class="profileContainerEdit">            
                         <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center', 'url' => ['controller' => 'Users', 'action' => 'edit', $user->user_id]]) ?>
+
+                            <input type="text" id="avatar-code" name="avatar-code" style="display: none">
+                            <?=$this->Form->hidden('photo_2', ['id' => 'agent-photo']); ?>
                             <!-- Nombre Completo -->
                             <input class="col-lg-7 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
                             <!-- Teléfono -->
@@ -25,6 +27,7 @@ $this->assign('title', $title);?>
                               </div>
                             </div>
                         <?= $this->Form->end() ?>
+                        <!-- Imagen -->
                         <div class="text-center">
                             <?php if (strlen($user['photo']) > 80): ?>
                                   <img class="rounded-circle" height="200" width="200" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
@@ -35,7 +38,7 @@ $this->assign('title', $title);?>
                     </div>
                 </div>
                 <div class="tutorTable mt-2">                    
-                    <table class="table">
+                    <table class="table text-center">
                         <tbody>
                             <?php if (isset($supervisors)): ?>
                                 <?php foreach ($supervisors as $super): ?>
@@ -43,11 +46,21 @@ $this->assign('title', $title);?>
                                         <td><?= $super['name'] ?></td>
                                         <td><?= $super['phone'] ?></td>
                                         <?php if ($super['role'] == 'TUT'): ?>
-                                            <td colspan="2"><?= $super['role'] ?></td>
+                                            <td><?= $super['role'] ?></td>
+                                            <td>                    
+                                                <a href="#" class="btn btn-info btn-sm disabled border-dark">Reasignar</a>
+                                            </td>
                                         <?php else: ?>
                                             <td><?= $super['role'] ?></td>
-                                            <td>
-                                                Editar Hola      
+                                            <td>                    
+                                                <?= $this->Form->postLink(
+                                                    'Eliminar', 
+                                                    ['action' => 'deleteTutor', $super['id'], $user->user_id], 
+                                                    [
+                                                        'confirm' => __('¿Está seguro que eliminar a "{0}" como tutor?', $super['name']),
+                                                        'class' => 'btn btn-sm btn-danger border-dark'
+                                                    ]
+                                                ) ?>  
                                             </td>
                                         <?php endif ?>
                                     </tr>
@@ -63,7 +76,7 @@ $this->assign('title', $title);?>
                     </table>
                 </div>
                 <div class="row">
-                    <a href="#" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
+                    <a href="<?= $this->Url->build('/', true) ?>tutor/add/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
                 </div>
                 <div class="profileContainerTasks mt-3">
                     <h6>Tipos de Tareas Asignadas</h6>
@@ -83,7 +96,14 @@ $this->assign('title', $title);?>
                     </div>
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-3">
-                    <a href="#">¿Desea eliminar a Mariano Rodriguez de la base de datos?</a>
+                    <?= $this->Form->postLink(
+                        "¿Desea eliminar a $user->name de la base de datos?", 
+                        ['action' => 'delete', $user->user_id], 
+                        [
+                            'confirm' => __('¿Está seguro que eliminar a "{0}" como tutor?', $super['name']),
+                            'class' => 'link'
+                        ]
+                    ) ?> 
                     <div class="d-flex">
                         <a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
                         <input form="form" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
@@ -93,3 +113,6 @@ $this->assign('title', $title);?>
         </div>
     </div>
 </div>
+
+<?= $this->Html->css(['/plugins/jcrop/jquery.Jcrop.min']) ?>
+<?= $this->Html->script(['/plugins/jcrop/jquery.Jcrop.min']) ?>

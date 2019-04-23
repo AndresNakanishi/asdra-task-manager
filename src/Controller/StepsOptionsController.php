@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
 
 /**
  * StepsOptions Controller
@@ -12,83 +13,41 @@ use App\Controller\AppController;
  */
 class StepsOptionsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Steps', 'NextSteps']
-        ];
-        $stepsOptions = $this->paginate($this->StepsOptions);
-
-        $this->set(compact('stepsOptions'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Steps Option id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $stepsOption = $this->StepsOptions->get($id, [
-            'contain' => ['Steps', 'NextSteps']
-        ]);
-
-        $this->set('stepsOption', $stepsOption);
-    }
 
     /**
      * Add method
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($id = null)
     {
+        $this->viewBuilder()->setLayout('asdra-layout');
         $stepsOption = $this->StepsOptions->newEntity();
         if ($this->request->is('post')) {
-            $stepsOption = $this->StepsOptions->patchEntity($stepsOption, $this->request->getData());
-            if ($this->StepsOptions->save($stepsOption)) {
-                $this->Flash->success(__('The steps option has been saved.'));
+            $data = $this->request->getData();
+            $data['step_id'] = $id;
+            $stepsOption = $this->StepsOptions->patchEntity($stepsOption, $data);
 
-                return $this->redirect(['action' => 'index']);
+            try {
+                $insertDetails = TableRegistry::get('steps_options')->query(); 
+                $insertDetails->insert(['step_id', 'option_description', 'option_order', 'next_step_id'])
+                            ->values([
+                                'step_id' => $data['step_id'],
+                                'option_description' => $data['option_description'],
+                                'option_order' => $data['option_order'],
+                                'next_step_id' => $data['next_step_id']
+                                ])
+                            ->execute();
+                $this->Flash->success(__('La opción fue guardada.'));
+                return $this->redirect(['controller' => 'Steps', 'action' => 'view', $id]);
+            } catch (Exception $e) {            
+                $this->Flash->error(__('La opción no pudo ser guardada. Intente más tarde.'));
             }
-            $this->Flash->error(__('The steps option could not be saved. Please, try again.'));
         }
-        $steps = $this->StepsOptions->Steps->find('list', ['limit' => 200]);
-        $nextSteps = $this->StepsOptions->NextSteps->find('list', ['limit' => 200]);
-        $this->set(compact('stepsOption', 'steps', 'nextSteps'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Steps Option id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $stepsOption = $this->StepsOptions->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $stepsOption = $this->StepsOptions->patchEntity($stepsOption, $this->request->getData());
-            if ($this->StepsOptions->save($stepsOption)) {
-                $this->Flash->success(__('The steps option has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The steps option could not be saved. Please, try again.'));
-        }
-        $steps = $this->StepsOptions->Steps->find('list', ['limit' => 200]);
-        $nextSteps = $this->StepsOptions->NextSteps->find('list', ['limit' => 200]);
-        $this->set(compact('stepsOption', 'steps', 'nextSteps'));
+        $stepsOptions = $this->StepsOptions->find('all', ['conditions' => ['step_id' => $id]])->count();
+        $step = TableRegistry::get('steps')->find('all', ['conditions' => ['step_id' => $id]])->first();
+        $nextSteps = $this->StepsOptions->Steps->find('list', ['conditions' => ['task_id' => $step->task_id]]);
+        $this->set(compact('stepsOption', 'stepsOptions', 'nextSteps'));
     }
 
     /**
@@ -98,16 +57,16 @@ class StepsOptionsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($step_id = null, $option_order = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $stepsOption = $this->StepsOptions->get($id);
+        $stepsOption = $this->StepsOptions->find('all', ['conditions' => ['StepsOptions.step_id' => $step_id, 'option_order' => $option_order]])->first();
         if ($this->StepsOptions->delete($stepsOption)) {
-            $this->Flash->success(__('The steps option has been deleted.'));
+            $this->Flash->success(__('La opción ha sido correctamente eliminada.'));
         } else {
-            $this->Flash->error(__('The steps option could not be deleted. Please, try again.'));
+            $this->Flash->error(__('La opción no puedo ser eliminada.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['controller' => 'Steps', 'action' => 'view',$step_id]);
     }
 }

@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\RouteBuilder;
+use Cake\Routing\Router;
 
 /**
  * Tasks Controller
@@ -11,17 +14,6 @@ use App\Controller\AppController;
  */
 class TasksController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
-    {
-        $tasks = $this->paginate($this->Tasks);
-
-        $this->set(compact('tasks'));
-    }
 
     /**
      * View method
@@ -32,11 +24,12 @@ class TasksController extends AppController
      */
     public function view($id = null)
     {
+        $this->viewBuilder()->setLayout('asdra-layout');
         $task = $this->Tasks->get($id, [
-            'contain' => []
+            'contain' => ['Groups']
         ]);
-
-        $this->set('task', $task);
+        $steps = TableRegistry::get('steps')->find('all', ['conditions' => ['task_id' => $id]])->order(['step_order' => 'ASC'])->all();
+        $this->set(compact('task','steps'));
     }
 
     /**
@@ -44,19 +37,25 @@ class TasksController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($id = null)
     {
+        $this->viewBuilder()->setLayout('asdra-layout');
         $task = $this->Tasks->newEntity();
+        $tasks = $this->Tasks->find('all', ['conditions' => ['group_id' => $id]])->count();
         if ($this->request->is('post')) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+            $data = $this->request->getData();
+            $data['required'] = 1;
+            $data['priority'] = 1;
+            $data['group_id'] = $id;
+            $task = $this->Tasks->patchEntity($task, $data);
             if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('The task has been saved.'));
+                $this->Flash->success(__('<b>La tarea fue configurada correctamente!</b>'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller' => 'Groups', 'action' => 'view',$id]);
             }
-            $this->Flash->error(__('The task could not be saved. Please, try again.'));
+            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
-        $this->set(compact('task'));
+        $this->set(compact('task','tasks'));
     }
 
     /**
@@ -68,19 +67,21 @@ class TasksController extends AppController
      */
     public function edit($id = null)
     {
+        $this->viewBuilder()->setLayout('asdra-layout');
         $task = $this->Tasks->get($id, [
             'contain' => []
         ]);
+        $tasks = $this->Tasks->find('all', ['conditions' => ['group_id' => $task->group_id]])->count();
         if ($this->request->is(['patch', 'post', 'put'])) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
             if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('The task has been saved.'));
+                $this->Flash->success(__('<b>Los datos se guardaron correctamente!</b>'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group_id]);
             }
-            $this->Flash->error(__('The task could not be saved. Please, try again.'));
+            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
-        $this->set(compact('task'));
+        $this->set(compact('task','tasks'));
     }
 
     /**
@@ -95,11 +96,11 @@ class TasksController extends AppController
         $this->request->allowMethod(['post', 'delete']);
         $task = $this->Tasks->get($id);
         if ($this->Tasks->delete($task)) {
-            $this->Flash->success(__('The task has been deleted.'));
+            $this->Flash->success(__('<b>La tarea fue eliminada correctamente!</b>'));
         } else {
-            $this->Flash->error(__('The task could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group_id]);
     }
 }
