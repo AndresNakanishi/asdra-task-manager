@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Database\Expression\QueryExpression;
+use Cake\Datasource\ConnectionManager;
+use Cake\ORM\TableRegistry;
 
 /**
  * GroupUsers Controller
@@ -12,35 +15,16 @@ use App\Controller\AppController;
  */
 class GroupUsersController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
+
+    public function view($user_id, $group_type)
     {
-        $this->paginate = [
-            'contain' => ['Groups', 'Users', 'GroupTypes']
-        ];
-        $groupUsers = $this->paginate($this->GroupUsers);
+        $this->viewBuilder()->setLayout('asdra-layout');
+     
+        $groupUsers = $this->GroupUsers->find('all', ['conditions' => ['group_type_id' => $group_type, 'user_id' => $user_id]])->contain('Groups')->order(['start_time' => 'ASC'])->all();
+        $groupType = TableRegistry::get('groups_types')->find('all', ['conditions' => ['group_type_id' => $group_type]])->first();
+        $user = TableRegistry::get('users')->find('all', ['conditions' => ['user_id' => $user_id]])->first();
 
-        $this->set(compact('groupUsers'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Group User id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $groupUser = $this->GroupUsers->get($id, [
-            'contain' => ['Groups', 'Users', 'GroupTypes']
-        ]);
-
-        $this->set('groupUser', $groupUser);
+        $this->set(compact('groupUsers','groupType','user'));
     }
 
     /**
@@ -48,49 +32,25 @@ class GroupUsersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($user_id = null, $group_type = null)
     {
+        $this->viewBuilder()->setLayout('asdra-layout');
+
         $groupUser = $this->GroupUsers->newEntity();
         if ($this->request->is('post')) {
-            $groupUser = $this->GroupUsers->patchEntity($groupUser, $this->request->getData());
+            $data = $this->request->getData();
+            debug($data);
+            die;
+            $groupUser = $this->GroupUsers->patchEntity($groupUser, $data);
             if ($this->GroupUsers->save($groupUser)) {
-                $this->Flash->success(__('The group user has been saved.'));
+                $this->Flash->success(__('El grupo de tareas fue configurado correctamente.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The group user could not be saved. Please, try again.'));
+            $this->Flash->error(__('Oh no! Hubo un error. Intente más tarde.'));
         }
-        $groups = $this->GroupUsers->Groups->find('list', ['limit' => 200]);
-        $users = $this->GroupUsers->Users->find('list', ['limit' => 200]);
-        $groupTypes = $this->GroupUsers->GroupTypes->find('list', ['limit' => 200]);
-        $this->set(compact('groupUser', 'groups', 'users', 'groupTypes'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Group User id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $groupUser = $this->GroupUsers->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $groupUser = $this->GroupUsers->patchEntity($groupUser, $this->request->getData());
-            if ($this->GroupUsers->save($groupUser)) {
-                $this->Flash->success(__('The group user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The group user could not be saved. Please, try again.'));
-        }
-        $groups = $this->GroupUsers->Groups->find('list', ['limit' => 200]);
-        $users = $this->GroupUsers->Users->find('list', ['limit' => 200]);
-        $groupTypes = $this->GroupUsers->GroupTypes->find('list', ['limit' => 200]);
-        $this->set(compact('groupUser', 'groups', 'users', 'groupTypes'));
+        $groups = TableRegistry::get('groups')->find('list')->enableHydration()->toList();
+        $this->set(compact('groupUser', 'groups'));
     }
 
     /**
@@ -100,14 +60,17 @@ class GroupUsersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($group_id = null, $user_id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $groupUser = $this->GroupUsers->get($id);
+        
+        $groupUser = $this->GroupUsers->find('all', ['conditions' => ['group_id' => $group_id, 'user_id' => $user_id]])->first();
+        // Just to improve user experience on our notifications
+        $user = TableRegistry::get('users')->get($user_id);
         if ($this->GroupUsers->delete($groupUser)) {
-            $this->Flash->success(__('The group user has been deleted.'));
+            $this->Flash->success(__("Se eliminó el grupo de tareas asignado a $user->name."));
         } else {
-            $this->Flash->error(__('The group user could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Las tareas no han podido ser eliminadas. Por favor, intente más tarde.'));
         }
 
         return $this->redirect(['action' => 'index']);

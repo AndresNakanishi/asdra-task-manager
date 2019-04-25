@@ -5,6 +5,9 @@
 /logs/*
 /tmp/*
 /vendor/*
+/webroot/img/users/*
+/webroot/img/groups/*
+/webroot/img/steps/*
 
 # OS generated files #
 ######################

@@ -39,7 +39,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="d-flex">
-                        <a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
+                        <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
                         <input form="form" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>
                 </div>

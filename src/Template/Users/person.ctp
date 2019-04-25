@@ -81,13 +81,15 @@
                 <div class="profileContainerTasks mt-3">
                     <h6>Tipos de Tareas Asignadas</h6>
                     <div class="profileContainerTasks-tasks">
-                        <a href="#" class="task text-center">
+                        <!-- Group Type 1 ==> Tareas del trabajo  -->
+                        <a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user->user_id?>/1" class="task text-center">
                             <div class="icon rounded-circle">
                                 <i class="icon-fontawesome fas fa-wrench"></i>
                             </div>
                             <p class="mt-3">En el trabajo</p>
                         </a>
-                        <a href="#" class="task text-center">
+                        <!-- Group Type 2  ==> Tareas de la casa -->
+                        <a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user->user_id?>/2" class="task text-center">
                             <div class="icon rounded-circle">
                                 <i class="icon-fontawesome fas fa-home"></i>
                             </div>
