@@ -23,7 +23,7 @@ $days = [
 	            <h3><b>Agregar Grupo de Tareas</b></h3>
             </div>
             <div class="card-body d-flex justify-content-center">	
-		        <?= $this->Form->create($groupUser, ['class' => 'col-lg-9','id' => 'addForm']) ?>
+		        <?= $this->Form->create($groupUser, ['autocomplete' => 'off','class' => 'col-lg-9','id' => 'addForm']) ?>
 			        <div class="form-group">
 			        	<label for="group_id">Grupo de Tareas:</label>
 						<select class="form-control group_id_select" name="group_id">
@@ -39,7 +39,7 @@ $days = [
 			        </div>
 			        <div class="form-group">
 			        	<label for="rep_days">Días:</label>
-						<?= $this->Form->select('repdays[]', $days, ['class' => 'form-control rep-days']);?>
+						<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days']);?>
 			        </div>
 			        <div class="row">
 			        	<div class="col-lg-12">
@@ -48,7 +48,7 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="start-time">Desde:</label>
 			                <div class="input-group date" id="start-time" data-target-input="nearest">
-			                    <input type="text" name="start-time" class="form-control datetimepicker-input" data-target="#start-time" placeholder="HH:MM" required/>
+			                    <input type="text" name="start_time" class="form-control datetimepicker-input" data-target="#start-time" placeholder="HH:MM" required/>
 			                    <div class="input-group-append" data-target="#start-time" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="far fa-clock"></i></div>
 			                    </div>
@@ -57,7 +57,7 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="end-time">Hasta:</label>
 			                <div class="input-group date" id="end-time" data-target-input="nearest">
-			                    <input type="text" name="end-time" class="form-control datetimepicker-input" data-target="#end-time" placeholder="HH:MM" required/>
+			                    <input type="text" name="end_time" class="form-control datetimepicker-input" data-target="#end-time" placeholder="HH:MM" required/>
 			                    <div class="input-group-append" data-target="#end-time" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="far fa-clock"></i></div>
 			                    </div>
@@ -71,7 +71,7 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="start-date">Desde:</label>
 				        	<div class="input-group date" id="start-date" data-target-input="nearest">
-			                    <input type="text" name="start-date" class="form-control datetimepicker-input" data-target="#start-date" placeholder="DD/MM/AAAA" />
+			                    <input type="text" name="start_date" class="form-control datetimepicker-input" data-target="#start-date" placeholder="DD/MM/AAAA" />
 			                    <div class="input-group-append" data-target="#start-date" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
 			                    </div>
@@ -80,7 +80,7 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="end-date">Hasta:</label>
 				        	<div class="input-group date" id="end-date" data-target-input="nearest">
-			                    <input type="text" name="end-date" class="form-control datetimepicker-input" data-target="#end-date" placeholder="DD/MM/AAAA"/>
+			                    <input type="text" name="end_date" class="form-control datetimepicker-input" data-target="#end-date" placeholder="DD/MM/AAAA"/>
 			                    <div class="input-group-append" data-target="#end-date" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
 			                    </div>
@@ -115,7 +115,7 @@ $days = [
 		// Start Time
 		$(function () {
 	        $('#start-time').datetimepicker({
-	            format: 'LT'
+	            format:'HH:mm'
 	        });
 	    });
 	    $("#start-time").on("change.datetimepicker", function (e) {
@@ -125,7 +125,7 @@ $days = [
 	    // End Time
 		$(function () {
 	        $('#end-time').datetimepicker({
-	            format: 'LT'
+	            format:'HH:mm'
 	        });
 	    });
 	    $("#end-time").on("change.datetimepicker", function (e) {
