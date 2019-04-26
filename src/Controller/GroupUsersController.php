@@ -54,36 +54,40 @@ class GroupUsersController extends AppController
             } else {
                 $data['end_date'] = null;
             }
-            try {
-                $supTable = TableRegistry::get('group_users');
-                $insert = $supTable->query();
-                $insert->insert([
-                    'user_id',
-                    'group_id',
-                    'date_from',
-                    'date_to',
-                    'start_time',
-                    'end_time',
-                    'repetition',
-                    'rep_days',
-                    'group_type_id'
-                ])->values([
-                    'user_id' => $data['user_id'],
-                    'group_id' => $data['group_id'],
-                    'date_from' => $data['start_date'],
-                    'date_to' => $data['end_date'],
-                    'start_time' => $data['start_time'],
-                    'end_time' => $data['end_time'],
-                    'repetition' => $data['repetition'],
-                    'rep_days' => $data['rep_days'],
-                    'group_type_id' => $data['group_type_id']
-                ])
-                ->execute();
+            if ($data['end_date'] == null || (strtotime($data['end_date']) > strtotime($data['start_date']))) {
+                try {
+                    $supTable = TableRegistry::get('group_users');
+                    $insert = $supTable->query();
+                    $insert->insert([
+                        'user_id',
+                        'group_id',
+                        'date_from',
+                        'date_to',
+                        'start_time',
+                        'end_time',
+                        'repetition',
+                        'rep_days',
+                        'group_type_id'
+                    ])->values([
+                        'user_id' => $data['user_id'],
+                        'group_id' => $data['group_id'],
+                        'date_from' => $data['start_date'],
+                        'date_to' => $data['end_date'],
+                        'start_time' => $data['start_time'],
+                        'end_time' => $data['end_time'],
+                        'repetition' => $data['repetition'],
+                        'rep_days' => $data['rep_days'],
+                        'group_type_id' => $data['group_type_id']
+                    ])
+                    ->execute();
 
-                $this->Flash->success(__('El grupo de tareas fue configurado correctamente.'));
-                return $this->redirect(['action' => 'view',$user_id,$group_type]);
-            } catch (Exception $e) {   
-                $this->Flash->error(__('Oh no! Hubo un error. Intente más tarde.'));
+                    $this->Flash->success(__('El grupo de tareas fue configurado correctamente.'));
+                    return $this->redirect(['action' => 'view',$user_id,$group_type]);
+                } catch (Exception $e) {   
+                    $this->Flash->error(__('Oh no! Hubo un error. Intente más tarde.'));
+                }
+            } else {
+                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>.'));    
             }
         }
         $groups = TableRegistry::get('groups')->find('list');
