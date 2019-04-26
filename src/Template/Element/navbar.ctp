@@ -17,6 +17,7 @@
                             Configuración
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="configDropdown">
+                            <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>init-in-charge">Personas a Cargo</a>
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>groups">Grupo de Tareas</a>
                         </div>
                     </li>
