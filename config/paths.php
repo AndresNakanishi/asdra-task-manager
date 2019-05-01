@@ -87,3 +87,9 @@ define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'c
  */
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
+
+if ($_SERVER['REMOTE_ADDR'] == '127.0.0.1' || $_SERVER['REMOTE_ADDR'] == '::1') {
+    define('APP_URL', 'http://localhost/asdra-task-manager/');
+} else {
+    define('APP_URL', 'http://asdrataskmanager.esy.es/test/');
+}
