@@ -155,7 +155,7 @@ class StepsController extends AppController
             }
 
             // Entire URL or Half
-            $newAvatar = $imgFolder . $fileName;
+            $newAvatar = APP_URL . $imgFolder . $fileName;
         }
         return $newAvatar;
     }
