@@ -54,14 +54,18 @@ class GroupsController extends AppController
         $group = $this->Groups->newEntity();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            $data['image'] = $this->setImage($data['image'], $data['title']);
+            if ($data['image']['tmp_name'] == '') {
+                $data['image'] = null;
+            } else {
+                $data['image'] = $this->setImage($data['image'], $data['title']);
+            }
             $group = $this->Groups->patchEntity($group, $data);
             if ($this->Groups->save($group)) {
                 $this->Flash->success(__('<b>El grupo de tareas se configuró correctamente!</b>'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            $this->Flash->error(__('Recuerde que es necesario cargar el <b>título</b> y la <b>imagen</b> como mínimo!'));
         }
         $this->set(compact('group'));
     }

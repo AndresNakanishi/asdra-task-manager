@@ -46,9 +46,6 @@ class GroupUsersTable extends Table
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('GroupTypes', [
-            'foreignKey' => 'group_type_id'
-        ]);
     }
 
     /**
@@ -101,7 +98,6 @@ class GroupUsersTable extends Table
     {
         $rules->add($rules->existsIn(['group_id'], 'Groups'));
         $rules->add($rules->existsIn(['user_id'], 'Users'));
-        $rules->add($rules->existsIn(['group_type_id'], 'GroupTypes'));
 
         return $rules;
     }

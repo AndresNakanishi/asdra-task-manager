@@ -202,6 +202,7 @@ class UsersController extends AppController
             // Set Photo
             $data['user_type'] = 'PER';
             $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            $data['token'] = $this->generate_token(8);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->createSupevisorTutorRelationship($user, $this->Auth->user('user_id'));
@@ -429,30 +430,35 @@ class UsersController extends AppController
 
         $users = $usersTable->find()
             ->select([
-                'company' => "IFNULL(companies.company_name, ' - ')",
+                'company' => "IFNULL(cmp.company_name, ' - ')",
                 'id' => 'users.user_id',
                 'name' => 'users.name',
                 'phone' => 'users.phone',
                 'photo' => 'users.photo'
                 ])
-            ->where([
-                'AND' =>
-                    ['supervisors.supervisor_id' => $id],
-                    ['supervisors.rol' => 'TUT'],
-                    ['UPPER(users.name) LIKE' => '%'.$filter.'%']
-            ])
             ->join([[
                 'table' => 'supervisors',
-                'alias' => 'supervisors',
+                'alias' => 'sup',
                 'type' => 'INNER',
-                'conditions' => ['supervisors.person_id = users.user_id']
+                'conditions' => ["sup.person_id = users.user_id AND sup.rol = 'TUT'"]
+            ]])
+            ->join([[
+                'table' => 'supervisors',
+                'alias' => 'chf',
+                'type' => 'LEFT OUTER',
+                'conditions' => ["chf.person_id = sup.person_id AND chf.rol = 'CHF'"]
             ]])
             ->join([[
                 'table' => 'companies',
-                'alias' => 'companies',
+                'alias' => 'cmp',
                 'type' => 'LEFT OUTER',
-                'conditions' => ['companies.company_id = supervisors.company_id']
-            ]])
+                'conditions' => ['cmp.company_id = chf.company_id']
+            ]]) 
+            ->where([
+                'AND' =>
+                    ['sup.supervisor_id' => $id],
+                    ['UPPER(users.name) LIKE' => '%'.$filter.'%']
+            ])
             ->enableHydration(false)
             ->toList();
 
@@ -541,5 +547,30 @@ class UsersController extends AppController
             $newAvatar = $imgFolder . $fileName;
         }
         return $newAvatar;
+    }
+
+    public function generateNewToken($id = null)
+    {
+        $this->autoRender = false;
+        $user = $this->Users->get($id);
+
+        if ($this->request->is(['get', 'post', 'put'])) {
+            $data['token'] = $this->generate_token(8);
+            $user = $this->Users->patchEntity($user, $data);
+            if ($this->Users->save($user)) {
+                // Success
+                $this->Flash->success(__("El nuevo código fue generado correctamente: <b>$user->token</b>"));
+            } else {
+                // Fail
+                $this->Flash->error(__('Intente una vez más, hubo un error'));
+            }
+            return $this->redirect(['action' => 'person',$user->user_id]);
+        }
+    }
+
+    private function generate_token($length = 8) {
+       $chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
+       $password = substr(str_shuffle($chars), 0, $length);
+       return $password;
     }
 }

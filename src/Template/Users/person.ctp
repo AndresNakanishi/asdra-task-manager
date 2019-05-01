@@ -37,6 +37,14 @@
                         </div>    
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <label for="token">
+                            Código de Activación:
+                        </label>
+                        <input class="form-control" required name="token" type="text" value="<?= $user->token ?>" disabled>
+                    </div>
+                </div>
                 <div class="tutorTable mt-2">                    
                     <table class="table text-center">
                         <tbody>
@@ -107,6 +115,11 @@
                         ]
                     ) ?> 
                     <div class="d-flex">
+                        <?= $this->Html->link(
+                            'Generar Código de Activación Nuevo', 
+                            ['action' => 'generateNewToken', $user->user_id], 
+                            ['style' => 'padding-right: 10px;', 'class' => 'btn btn-info border-dark mr-3']
+                        ) ?>   
                         <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
                         <input form="form" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>

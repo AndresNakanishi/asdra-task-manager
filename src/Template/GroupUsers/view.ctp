@@ -25,7 +25,7 @@
                                     <td class="text-right">
                                         <?= $this->Html->link(
                                             'Editar', 
-                                            ['action' => 'edit', $tasks->group_id, $tasks->user_id], 
+                                            ['action' => 'edit', $tasks->user_id, $tasks->group_id], 
                                             ['style' => 'padding-right: 10px;', 'class' => 'btn btn-sm btn-info border-dark']
                                         ) ?>
                                         <?= $this->Form->postLink(

@@ -28,10 +28,35 @@ class GroupUsersController extends AppController
     }
 
 
-    public function edit($user_id = null, $group_type = null)
+    public function edit($user_id = null, $group_id = null)
     {
         $this->viewBuilder()->setLayout('asdra-layout');
 
+        $groupUser = $this->GroupUsers->find('all', ['conditions' => ['group_id' => $group_id, 'user_id' => $user_id]])->first();
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            // Arrange Date && Time
+            $data['start_time'] = date('H:i:s',strtotime($data['start_time']));
+            $data['end_time'] = date('H:i:s',strtotime($data['end_time']));
+            $data['start_date'] = date('Y-m-d 00:00:00',strtotime($data['start_date']));
+            if ($data['end_date'] !== '') {
+                $data['end_date'] = date('Y-m-d 00:00:00',strtotime($data['end_date']));
+            } else {
+                $data['end_date'] = null;
+            }
+            $groupUser = $this->GroupUsers->patchEntity($groupUser, $data);
+
+            if ($this->GroupUsers->save($groupUser)) {
+                $this->Flash->success(__('El grupo de tareas fue guardado correctamente.'));
+            } else {
+                // Fail
+                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            }
+            return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
+        }
+
+        $this->set(compact('groupUser'));
     }
     /**
      * Add method
