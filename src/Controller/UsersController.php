@@ -66,7 +66,7 @@ class UsersController extends AppController
         $session = $this->getRequest()->getSession();
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
-
+        
         // Búsqueda
 
         if ($this->request->is('post')) {
@@ -230,11 +230,11 @@ class UsersController extends AppController
             $data = $this->request->getData();
             // Set Photo
             $rol = $data['rol'];
-            unset($data['rol']);
             $company = $data['company'];
-            unset($data['company']);
             $data['user_type'] = 'PER';
             $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            unset($data['rol']);
+            unset($data['company']);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->createSupevisorRelationship($id, $user, $rol, $company);
@@ -256,7 +256,11 @@ class UsersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
             // Set Photo
-            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            if ($data['photo']['tmp_name'] == '') {
+                unset($data['photo']);
+            } else {
+                $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            }
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 // Success
@@ -359,7 +363,7 @@ class UsersController extends AppController
 
         // Crea un Supervisión de Tipo Tutor
     // Author: Ricardo Andrés Nakanishi || Last Update: 11/04/2019
-    private function createSupevisorRelationship($person, $supervisor, $rol, $company = null)
+    private function createSupevisorRelationship($person, $supervisor, $rol, $company)
     {
         $this->autoRender = false;
         $supTable = TableRegistry::get('supervisors');
@@ -373,7 +377,7 @@ class UsersController extends AppController
             'person_id' => $person,
             'supervisor_id' => $supervisor->user_id,
             'rol' => $rol,
-            'company' => $company
+            'company_id' => $company
         ])
         ->execute();
 
@@ -392,6 +396,7 @@ class UsersController extends AppController
             'withoutPendingTasks' => []
         ];
 
+        // Tiene un BUG
         $allUsers = $this->getSupervisedUsers($id, $filter);
 
         foreach ($allUsers as $person) {
@@ -421,6 +426,7 @@ class UsersController extends AppController
     {
         $filter = strtoupper($filter);
         $usersTable = TableRegistry::get('users');
+
         $users = $usersTable->find()
             ->select([
                 'company' => "IFNULL(companies.company_name, ' - ')",

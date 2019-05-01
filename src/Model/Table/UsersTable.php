@@ -98,7 +98,8 @@ class UsersTable extends Table
         $validator
             ->scalar('token')
             ->maxLength('token', 255)
-            ->allowEmptyString('token');
+            ->allowEmptyString('token')
+            ->add('token', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('address')
@@ -119,6 +120,7 @@ class UsersTable extends Table
     {
         $rules->add($rules->isUnique(['email']));
         $rules->add($rules->isUnique(['user']));
+        $rules->add($rules->isUnique(['token']));
         $rules->add($rules->existsIn(['locale_id'], 'Locales'));
 
         return $rules;

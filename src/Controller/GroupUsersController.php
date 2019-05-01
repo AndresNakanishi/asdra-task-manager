@@ -27,6 +27,12 @@ class GroupUsersController extends AppController
         $this->set(compact('groupUsers','groupType','user'));
     }
 
+
+    public function edit($user_id = null, $group_type = null)
+    {
+        $this->viewBuilder()->setLayout('asdra-layout');
+
+    }
     /**
      * Add method
      *

@@ -25,15 +25,6 @@ $days = [
             <div class="card-body d-flex justify-content-center">	
 		        <?= $this->Form->create($groupUser, ['autocomplete' => 'off','class' => 'col-lg-9','id' => 'addForm']) ?>
 			        <div class="form-group">
-			        	<label for="group_id">Grupo de Tareas:</label>
-						<select class="form-control group_id_select" name="group_id">
-							<option value="-" disabled selected>Selecciona un grupo de tareas</option>
-							<?php foreach ($groups as $value => $group): ?>
-								<option value="<?= $value ?>"><?= $group ?></option>
-							<?php endforeach ?>
-						</select>
-			        </div>
-			        <div class="form-group">
 			        	<label for="repetition">Repetición:</label>
 						<?= $this->Form->select('repetition', $repetition, ['default' => '', 'class' => 'form-control']);?>
 			        </div>
@@ -94,7 +85,7 @@ $days = [
                 	'class' => 'btn btn-primary border-dark mr-3',
                 	'form' => 'addForm'
             	]) ?>
-				<a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $authUser->user_id ?>" class="btn btn-danger border-dark">Cancelar</a>  
+				<a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark">Cancelar</a>  
             </div>
         </div>
     </div>

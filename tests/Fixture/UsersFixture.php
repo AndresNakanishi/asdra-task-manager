@@ -33,6 +33,7 @@ class UsersFixture extends TestFixture
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['user_id'], 'length' => []],
             'user' => ['type' => 'unique', 'columns' => ['user'], 'length' => []],
+            'token' => ['type' => 'unique', 'columns' => ['token'], 'length' => []],
             'usr_lca_fk' => ['type' => 'foreign', 'columns' => ['locale_id'], 'references' => ['locales', 'locale_id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
         ],
         '_options' => [

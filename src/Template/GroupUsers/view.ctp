@@ -23,6 +23,11 @@
                                     <td><?= $tasks->repetition ?></td>
                                     <td><?= date('H:i',strtotime($tasks->start_time)).'hs. a '.date('H:i',strtotime($tasks->end_time)).'hs.' ?></td>
                                     <td class="text-right">
+                                        <?= $this->Html->link(
+                                            'Editar', 
+                                            ['action' => 'edit', $tasks->group_id, $tasks->user_id], 
+                                            ['style' => 'padding-right: 10px;', 'class' => 'btn btn-sm btn-info border-dark']
+                                        ) ?>
                                         <?= $this->Form->postLink(
                                             'Eliminar', 
                                             ['controller' => 'GroupUsers', 'action' => 'delete', $tasks->group_id, $tasks->user_id], 
