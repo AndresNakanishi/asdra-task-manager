@@ -47,6 +47,8 @@ class TasksController extends AppController
             $data['required'] = 1;
             $data['priority'] = 1;
             $data['group_id'] = $id;
+            $data['description_1'] = strtoupper($data['description_1']);
+            $data['description_2'] = strtoupper($data['description_2']);
             $task = $this->Tasks->patchEntity($task, $data);
             if ($this->Tasks->save($task)) {
                 $this->Flash->success(__('<b>La tarea fue configurada correctamente!</b>'));
@@ -73,7 +75,10 @@ class TasksController extends AppController
         ]);
         $tasks = $this->Tasks->find('all', ['conditions' => ['group_id' => $task->group_id]])->count();
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+            $data = $this->request->getData();
+            $data['description_1'] = strtoupper($data['description_1']);
+            $data['description_2'] = strtoupper($data['description_2']);
+            $task = $this->Tasks->patchEntity($task, $data);
             if ($this->Tasks->save($task)) {
                 $this->Flash->success(__('<b>Los datos se guardaron correctamente!</b>'));
 

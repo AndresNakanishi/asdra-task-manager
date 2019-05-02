@@ -40,6 +40,7 @@
 			                ],
 			                'required',
 			                'placeholder' => 'Orden (Cantidad de Tareas incluyendo esta: '.($tasks + 1).')',
+			                'value' => $tasks + 1,
 			                'min' => 1,
 			                'max' => $tasks + 1,
 			                'autocomplete' => 'off'

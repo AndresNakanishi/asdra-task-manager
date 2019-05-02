@@ -54,11 +54,24 @@ class GroupsController extends AppController
         $group = $this->Groups->newEntity();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            if ($data['image']['tmp_name'] == '') {
+
+            if ($data['image'] == '') {
                 $data['image'] = null;
+                unset($data['avatar_code']);
             } else {
-                $data['image'] = $this->setImage($data['image'], $data['title']);
+                // Image            
+                $img = $this->request->data('avatar-code');
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $fileData = base64_decode($img);
+                unset($data['avatar-code']);
+                    // Set Photo
+                $data['image'] = $this->setAvatar($data['image'], $data['title'], $fileData);
+                // Image
             }
+
+            $data['title'] = strtoupper($data['title']);
+            $data['description'] = strtoupper($data['description']);
             $group = $this->Groups->patchEntity($group, $data);
             if ($this->Groups->save($group)) {
                 $this->Flash->success(__('<b>El grupo de tareas se configuró correctamente!</b>'));
@@ -85,11 +98,24 @@ class GroupsController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
-            if ($data['image']['tmp_name'] == '') {
-                unset($data['image']);
+            
+            if ($data['image'] == '') {
+                $data['image'] = null;
+                unset($data['avatar_code']);
             } else {
-                $data['image'] = $this->setImage($data['image'], $data['title']);
+                // Image            
+                $img = $this->request->data('avatar-code');
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $fileData = base64_decode($img);
+                unset($data['avatar-code']);
+                    // Set Photo
+                $data['image'] = $this->setAvatar($data['image'], $data['title'], $fileData);
+                // Image
             }
+
+            $data['title'] = strtoupper($data['title']);
+            $data['description'] = strtoupper($data['description']);
             $group = $this->Groups->patchEntity($group, $data);
             if ($this->Groups->save($group)) {
                 $this->Flash->success(__('<b>Se editó correctamente!</b>'));
@@ -122,27 +148,29 @@ class GroupsController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-    // Set or Update Group Image
+    // Set or Update User Photo / Avatar
     // Author: Ricardo Andrés Nakanishi || Last Update: 10/04/2019
-    private function setImage($avatar, $name){
+    private function setAvatar($avatar, $name, $img){
         // Esta URL se usará una vez se configure de manera correcta la escritura.
         // $url = 'http://190.188.102.60:8089/organizerApi/public/';
         $url = WWW_ROOT;
         // Use a HASH with SHA1 to save our img
-        $hash = sha1($avatar["tmp_name"].$name);
+        $hash = sha1($avatar.$name);
         // We'll save our users img in this folder
         $imgFolder = "img/groups/";
         // Link that we are going to save
         $folder = $url . $imgFolder;
         // Out FileName
-        $fileName = "$hash.jpg";
+        $fileName = "$hash.png";
         // Temporal File
-        $fileTmp = $avatar["tmp_name"];
+        $fileTmp = $img;
         // Entire URL
         $fileDest = $folder . $fileName;
-            
-        if ($avatar['name'] == '') {
-            $newAvatar = null;
+
+        if ($avatar == '') {
+            if (!file_exists($fileDest)) {   
+                $newAvatar = 'https://ui-avatars.com/api/?size=256&font-size=0.33&background=0D8ABC&color=fff&name='.$name;
+            }
         } else {
             if (!is_dir($folder)) {
                 mkdir($folder, 0777, true);
@@ -150,15 +178,14 @@ class GroupsController extends AppController
 
             if (file_exists($fileDest)) {   
                 unlink($fileDest);
-                $success = move_uploaded_file($fileTmp, $fileDest);                         
+                $success = file_put_contents($fileDest, $fileTmp);                         
             } else {
-                $success = move_uploaded_file($fileTmp, $fileDest);                         
+                $success = file_put_contents($fileDest, $fileTmp);                         
             }
 
             // Entire URL or Half
-            $newAvatar = APP_URL . $imgFolder . $fileName;
+            $newAvatar = APP_URL. $imgFolder . $fileName;
         }
         return $newAvatar;
     }
-
 }

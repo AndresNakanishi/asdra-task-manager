@@ -1,4 +1,6 @@
 <?php $this->assign('title', $user->name);?>
+<?= $this->Html->css(['/plugins/jcrop/jquery.Jcrop.min']) ?>
+<?= $this->Html->script(['/plugins/jcrop/jquery.Jcrop.min']) ?>
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
@@ -7,25 +9,14 @@
                 <div class="profileContainer-content mt-3">
                     <div class="profileContainerEdit">            
                         <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center', 'url' => ['controller' => 'Users', 'action' => 'edit', $user->user_id]]) ?>
-
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
-                            <?=$this->Form->hidden('photo_2', ['id' => 'agent-photo']); ?>
+                            <input type="text" id="photo" name="photo" style="display: none">         
                             <!-- Nombre Completo -->
                             <input class="col-lg-7 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
                             <!-- Teléfono -->
                             <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
                             <!-- Dirección -->
                             <input class="col-lg-11 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
-                            <!-- Foto -->
-                            <div class="input-group col-lg-11 mt-3 p-0">
-                              <div class="input-group-prepend">
-                                <span class="input-group-text" id="photoInput"><i class="fas fa-user"></i></span>
-                              </div>
-                              <div class="custom-file">
-                                <input type="file" class="custom-file-input" name="photo" id="photo" aria-describedby="photoInput">
-                                <label class="custom-file-label" for="photo">Cambiar tu foto</label>
-                              </div>
-                            </div>
                         <?= $this->Form->end() ?>
                         <!-- Imagen -->
                         <div class="text-center">
@@ -37,16 +28,171 @@
                         </div>    
                     </div>
                 </div>
+                <!-- Foto -->
+                <div class="col-lg-8" style="margin-top: 30px" id="avatar-div">
+                    <div class="row text-center d-flex flex-column justify-content-center align-items-center" id="div-img-form">
+                        <div class="col-lg-12" style="overflow: hidden;">
+                            <!-- Foto -->
+                            <input type="file" class="custom-file-input" name="photo" id="file" style="display:none;">
+
+                            <label class="btn btn-primary" for="file">
+                              Seleccionar imagen
+                            </label>
+                            <br>
+                            <p class="m-b-10">Tamaño maximo de imagen: 3 MB.</p>
+                        </div>
+                        <div id="avatar-resize-info" class="col-lg-12 m-b-10" style="display: none">
+                          <hr class="m-t-0 m-b-10" style="border-color: #cfcfcf">
+                          Seleccione el area de la imagen que desea subir
+                        </div>
+                        <div class="col-lg-12" id="views"></div>
+                        <div class="col-lg-12 m-t-10" id="avatar-size-error" style="color: #930000; display: none">
+                          La imagen seleccionada supera los 3 MB.
+                        </div>
+                    </div>
+                </div>
+                <div class="row text-center m-b-15" id="div-img-loader" style="display: none">
+                    <div class="col-lg-12" style="overflow: hidden; margin-top: 30px">
+                        <?= $this->Html->image('img-spinner.gif', ["alt" => "Cargando...", "style" => "width: 100%; max-width: 120px;"]); ?>
+                    </div>
+                </div>
+                <!-- Foto -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="d-flex">
                         <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
-                        <input form="form" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
+                        <input form="form" id="accept-button" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    // Image Uploader con resize
 
-<?= $this->Html->css(['/plugins/jcrop/jquery.Jcrop.min']) ?>
-<?= $this->Html->script(['/plugins/jcrop/jquery.Jcrop.min']) ?>
+    $("#edit-image").click(function(e){
+        e.preventDefault();
+        $("#edit-image-div").hide();
+        $("#div-img-form").show();
+    });
+
+    var edited = 0;
+    var crop_max_width = 400;
+    var crop_max_height = 400;
+    var jcrop_api;
+    var canvas;
+    var context;
+    var image;
+
+    var prefsize;
+
+    $("#file").change(function() {
+      loadImage(this);
+      edited = 1;
+      $("#avatar-resize-info").show();
+    });
+
+    function loadImage(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        canvas = null;
+        reader.onload = function(e) {
+          image = new Image();
+          image.onload = validateImage;
+          image.src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function dataURLtoBlob(dataURL) {
+      var BASE64_MARKER = ';base64,';
+      if (dataURL.indexOf(BASE64_MARKER) == -1) {
+        var parts = dataURL.split(',');
+        var contentType = parts[0].split(':')[1];
+        var raw = decodeURIComponent(parts[1]);
+
+        return new Blob([raw], {
+          type: contentType
+        });
+      }
+      var parts = dataURL.split(BASE64_MARKER);
+      var contentType = parts[0].split(':')[1];
+      var raw = window.atob(parts[1]);
+      var rawLength = raw.length;
+      var uInt8Array = new Uint8Array(rawLength);
+      for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+      }
+
+      return new Blob([uInt8Array], {
+        type: contentType
+      });
+    }
+
+    function validateImage() {
+      if (canvas != null) {
+        image = new Image();
+        image.onload = restartJcrop;
+        image.src = canvas.toDataURL('image/png');
+      } else restartJcrop();
+    }
+
+    function restartJcrop() {
+      if (jcrop_api != null) {
+        jcrop_api.destroy();
+      }
+      $("#views").empty();
+      $("#views").append("<canvas id=\"canvas\">");
+      canvas = $("#canvas")[0];
+      context = canvas.getContext("2d");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      context.drawImage(image, 0, 0);
+      $("#canvas").Jcrop({
+        onSelect: selectcanvas,
+        boxWidth: (document.getElementById("div-img-form").clientWidth)-40,
+        boxHeight: crop_max_height,
+        aspectRatio: 1/1,
+        setSelect: [canvas.width/4, canvas.height/4, canvas.width/4+canvas.width/2, canvas.height/4+canvas.height/2]
+      }, function() {
+        jcrop_api = this;
+      });
+    }
+
+    function selectcanvas(coords) {
+      prefsize = {
+        x: Math.round(coords.x),
+        y: Math.round(coords.y),
+        w: Math.round(coords.w),
+        h: Math.round(coords.h)
+      };
+    }
+
+    $("#accept-button").click(function(e) {
+      if(edited == 1)
+      {
+        canvas.width = prefsize.w;
+        canvas.height = prefsize.h;
+        context.drawImage(image, prefsize.x, prefsize.y, prefsize.w, prefsize.h, 0, 0, canvas.width, canvas.height);
+        var dataURL = canvas.toDataURL('image/png');
+        // Error si la imagen es mayor a 3 MB
+        if(dataURL.length<3145728)
+        {
+            $("#photo").val($("#name").val()+'.png');
+            $("#avatar-code").val(dataURL);
+            $("#avatar-div").hide();
+            $("#div-img-loader").show();
+        }
+        else
+        {
+            $("#avatar-size-error").show();
+        }
+      }
+      else
+      {
+        $("#avatar-div").hide();
+        $("#div-img-loader").show();
+      }
+    });
+</script>

@@ -12,7 +12,7 @@
             </div>
             <div class="card-body d-flex flex-column">
             	<?php if ($step->photo !== null or $step->photo == ''): ?>
-            		<img src="<?= $this->Url->build('/', true) ?><?= $step->photo ?>" style="width:100%; max-width: 300px;" alt="<?= $step->title ?>">
+            		<img src="<?= $step->photo ?>" style="width:100%; max-width: 300px;" alt="<?= $step->title ?>">
         			<hr>		
         		<?php endif ?>	
 			    <h5 class="card-title"><?= $step->title ?></h5>

@@ -199,9 +199,18 @@ class UsersController extends AppController
 
         if ($this->request->is('post')) {
             $data = $this->request->getData();
-            // Set Photo
+            // Image            
+                $img = $this->request->data('avatar-code');
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $fileData = base64_decode($img);
+                unset($data['avatar-code']);
+                    // Set Photo
+                $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
+            // Image
+            $data['name'] = strtoupper($data['name']);
+            $data['address'] = strtoupper($data['address']);
             $data['user_type'] = 'PER';
-            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
             $data['token'] = $this->generate_token(8);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
@@ -233,7 +242,17 @@ class UsersController extends AppController
             $rol = $data['rol'];
             $company = $data['company'];
             $data['user_type'] = 'PER';
-            $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+            $data['name'] = strtoupper($data['name']);
+            $data['address'] = strtoupper($data['address']);
+            // Image            
+                $img = $this->request->data('avatar-code');
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $fileData = base64_decode($img);
+                unset($data['avatar-code']);
+                    // Set Photo
+                $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
+            // Image
             unset($data['rol']);
             unset($data['company']);
             $user = $this->Users->patchEntity($user, $data);
@@ -256,12 +275,24 @@ class UsersController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
+
             // Set Photo
-            if ($data['photo']['tmp_name'] == '') {
+            if ($data['photo'] == '') {
                 unset($data['photo']);
+                unset($data['avatar-code']);
             } else {
-                $data['photo'] = $this->setAvatar($data['photo'], $data['name']);
+                // Image            
+                $img = $this->request->data('avatar-code');
+                $img = str_replace('data:image/png;base64,', '', $img);
+                $img = str_replace(' ', '+', $img);
+                $fileData = base64_decode($img);
+                unset($data['avatar-code']);
+                    // Set Photo
+                $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
+                // Image
             }
+            $data['name'] = strtoupper($data['name']);
+            $data['address'] = strtoupper($data['address']);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 // Success
@@ -510,24 +541,24 @@ class UsersController extends AppController
 
     // Set or Update User Photo / Avatar
     // Author: Ricardo Andrés Nakanishi || Last Update: 10/04/2019
-    private function setAvatar($avatar, $name){
+    private function setAvatar($avatar, $name, $img){
         // Esta URL se usará una vez se configure de manera correcta la escritura.
         // $url = 'http://190.188.102.60:8089/organizerApi/public/';
         $url = WWW_ROOT;
         // Use a HASH with SHA1 to save our img
-        $hash = sha1($avatar["tmp_name"].$name);
+        $hash = sha1($avatar.$name);
         // We'll save our users img in this folder
         $imgFolder = "img/users/";
         // Link that we are going to save
         $folder = $url . $imgFolder;
         // Out FileName
-        $fileName = "$hash.jpg";
+        $fileName = "$hash.png";
         // Temporal File
-        $fileTmp = $avatar["tmp_name"];
+        $fileTmp = $img;
         // Entire URL
         $fileDest = $folder . $fileName;
-            
-        if ($avatar['name'] == '') {
+
+        if ($avatar == '') {
             if (!file_exists($fileDest)) {   
                 $newAvatar = 'https://ui-avatars.com/api/?size=256&font-size=0.33&background=0D8ABC&color=fff&name='.$name;
             }
@@ -538,9 +569,9 @@ class UsersController extends AppController
 
             if (file_exists($fileDest)) {   
                 unlink($fileDest);
-                $success = move_uploaded_file($fileTmp, $fileDest);                         
+                $success = file_put_contents($fileDest, $fileTmp);                         
             } else {
-                $success = move_uploaded_file($fileTmp, $fileDest);                         
+                $success = file_put_contents($fileDest, $fileTmp);                         
             }
 
             // Entire URL or Half
@@ -569,7 +600,7 @@ class UsersController extends AppController
     }
 
     private function generate_token($length = 8) {
-       $chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
+       $chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
        $password = substr(str_shuffle($chars), 0, $length);
        return $password;
     }

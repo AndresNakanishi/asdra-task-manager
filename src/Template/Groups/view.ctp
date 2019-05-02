@@ -7,7 +7,7 @@
             </div>
             <div class="card-body d-flex justify-content-center flex-column">	
             	<?php if ($group->image !== null or $group->image == ''): ?>
-        			<img src="<?= $this->Url->build('/', true) ?><?= $group->image ?>" style="width:100%; max-width: 300px;" alt="<?= $group->title ?>">		
+        			<img src="<?= $group->image ?>" style="width:100%; max-width: 300px;" alt="<?= $group->title ?>">		
         			<hr>
         		<?php endif ?>	
 		    	<?php if (count($tasks) !== 0): ?>
