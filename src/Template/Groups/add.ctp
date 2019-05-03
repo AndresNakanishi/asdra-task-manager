@@ -9,8 +9,8 @@
             </div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center">	
 		        <?= $this->Form->create($group, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
-                    <input type="text" id="avatar-code" name="avatar-code" style="display: none">
-                    <input type="text" id="image" name="image" style="display: none">
+              <input type="text" id="avatar-code" name="avatar-code" style="display: none">
+              <input type="text" id="image" name="image" style="display: none">
 			        <div class="form-group">
 			            <?= $this->Form->control('title', [
 			                'class' => 'form-control',

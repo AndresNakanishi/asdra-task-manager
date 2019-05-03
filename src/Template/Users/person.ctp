@@ -130,7 +130,7 @@
                         "¿Desea eliminar a $user->name de la base de datos?", 
                         ['action' => 'delete', $user->user_id], 
                         [
-                            'confirm' => __('¿Está seguro que eliminar a "{0}" como tutor?', $super['name']),
+                            'confirm' => __('¿Está seguro que eliminar a "{0}" de la base de datos?', $user->name),
                             'class' => 'link'
                         ]
                     ) ?> 
