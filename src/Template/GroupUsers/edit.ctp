@@ -1,7 +1,21 @@
 <?php 
 $this->assign('title', 'Nuevo Grupo de Tareas');
-?>
 
+$repetition = [
+	"SEM" => "Repetición Semanal",
+	"MES" => "Repetición Mensual"
+];
+
+$days = [
+	'TODOS' => 'TODOS',
+	'LU' => 'Lunes',
+	'MA' => 'Martes',
+	'MI' => 'Miércoles',
+	'JU' => 'Jueves',
+	'VI' => 'Viernes'
+];
+
+?>
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
@@ -14,6 +28,14 @@ $this->assign('title', 'Nuevo Grupo de Tareas');
 			        	<div class="col-lg-12">
 			        		<p><strong>Rango horario de ejecución del grupo de tareas: </strong></p>
 			        	</div>
+				        <div class="form-group col-lg-12">
+				        	<label for="repetition">Repetición:</label>
+							<?= $this->Form->select('repetition', $repetition, ['default' => '', 'class' => 'form-control']);?>
+				        </div>
+				        <div class="form-group col-lg-12">
+				        	<label for="rep_days">Días:</label>
+							<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days']);?>
+				        </div>
 				        <div class="form-group col-lg-6">
 				        	<label for="start-time">Desde:</label>
 			                <div class="input-group date" id="start-time" data-target-input="nearest">

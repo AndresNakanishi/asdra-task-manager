@@ -1,7 +1,7 @@
 <?php 
 $this->assign('title', 'Nuevo Grupo de Tareas');
+
 $repetition = [
-	"DIA" => "Repetición Diaria",
 	"SEM" => "Repetición Semanal",
 	"MES" => "Repetición Mensual"
 ];

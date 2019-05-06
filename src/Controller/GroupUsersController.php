@@ -36,6 +36,9 @@ class GroupUsersController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
+            if ($data['rep_days'] !== null or $data['rep_days'] !== '') {
+                $data['rep_days'] = $this->repetitionDaysArrange($data['rep_days']);
+            }
             // Arrange Date && Time
             $data['start_time'] = date('H:i:s',strtotime($data['start_time']));
             $data['end_time'] = date('H:i:s',strtotime($data['end_time']));
