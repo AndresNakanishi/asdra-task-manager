@@ -515,42 +515,32 @@ class UsersController extends AppController
         $connection = ConnectionManager::get('default');
 
         $query = 
-                "SELECT 
-                    COUNT(tsk.task_id) pendingTasks,
-                    max(tlg.end_date) lastTask,
-                    grp.title,
-                    gus.repetition,
-                    gus.rep_days repDays,
-                    gus.start_time startTimeConf,
-                    gus.end_time endTimeConf,
-                    CAST(now() as time) now
-                FROM
-                    users per
-                        INNER JOIN
-                    group_users gus ON per.user_id = gus.user_id
-                        INNER JOIN
-                    groups grp ON gus.group_id = grp.group_id
-                        LEFT OUTER JOIN
-                    tasks tsk ON grp.group_id = tsk.group_id
-                        LEFT OUTER JOIN
-                    task_log tlg ON (tsk.task_id = tlg.task_id
-                        AND date_format(tlg.start_date, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d'))
-                WHERE
-                    ( gus.rep_days = 'TODOS'
-                      OR (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now()) + 1,'LU','MA','MI','JU','VI','SA','DO'),'%') and gus.repetition in ('DIA','SEM'))
-                      OR (gus.repetition = 'MES' and  DAY(now()) = DAY(gus.date_from))
-                     )
-                     AND per.user_id = :id
-                     AND gus.end_time < CAST(now() as time)
-                GROUP BY grp.title , gus.repetition , gus.rep_days , gus.start_time , gus.end_time
-                HAVING COUNT(grp.group_id) > 0";
+            "SELECT
+                COUNT(tsk.task_id) pendingTasks,
+                max(tlg.end_date) lastTask,
+                grp.title,
+                gus.repetition,
+                gus.rep_days repDays,
+                gus.start_time startTimeConf,
+                gus.end_time endTimeConf,
+                CAST(now() as time) now
+            FROM users per 
+            INNER JOIN group_users gus ON per.user_id = gus.user_id
+            INNER JOIN groups grp ON gus.group_id = grp.group_id
+            INNER JOIN tasks tsk ON grp.group_id = tsk.group_id
+            LEFT JOIN task_log tlg ON tsk.task_id = tlg.task_id AND date_format(tlg.start_date,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+            WHERE (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now())+1, 'LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'),'%') OR gus.rep_days = 'TODOS')
+            AND per.user_id = :user_id
+            AND gus.start_time < CAST(now() as time)
+            GROUP BY grp.title, gus.repetition, gus.rep_days, gus.start_time, gus.end_time
+            HAVING COUNT(tsk.task_id) > 0";
 
         $statement = $connection->execute($query,
             [
-                'id' => $id
+                'user_id' => $id
             ],
             [   
-                'id' => 'integer'
+                'user_id' => 'integer'
             ]
         );
 
