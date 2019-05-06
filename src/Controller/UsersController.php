@@ -305,6 +305,17 @@ class UsersController extends AppController
         }
     }
 
+
+    public function pendingTasks($id = null)
+    {
+        $this->viewBuilder()->setLayout('asdra-layout');
+    
+        $pendingTasks = $this->pendingTasksUser($id);
+        $user = $this->Users->get($id);
+
+        $this->set(compact('pendingTasks','user'));
+    }
+
     // Delete User || Screen 3
     // Author: Ricardo Andrés Nakanishi || Last Update 10/04/2019
     public function delete($id = null)
@@ -449,7 +460,6 @@ class UsersController extends AppController
         return $users_array;
     }
 
-
     // Query to get all persons supervised by the user
     // ID = Supervisor ID
     // FILTER = FILTER, usually a string
@@ -505,7 +515,7 @@ class UsersController extends AppController
         $connection = ConnectionManager::get('default');
 
         $query = 
-            "SELECT 
+            "SELECT
                 COUNT(tsk.task_id) pendingTasks,
                 max(tlg.end_date) lastTask,
                 grp.title,
@@ -514,26 +524,16 @@ class UsersController extends AppController
                 gus.start_time startTimeConf,
                 gus.end_time endTimeConf,
                 CAST(now() as time) now
-            FROM
-                users per
-                    INNER JOIN
-                group_users gus ON per.user_id = gus.user_id
-                    INNER JOIN
-                groups grp ON gus.group_id = grp.group_id
-                    LEFT OUTER JOIN
-                tasks tsk ON grp.group_id = tsk.group_id
-                    LEFT OUTER JOIN
-                task_log tlg ON (tsk.task_id = tlg.task_id
-                    AND date_format(tlg.start_date, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d'))
-            WHERE
-                ( gus.rep_days = 'TODOS'
-                  OR (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now()) + 1,'LU','MA','MI','JU','VI','SA','DO'),'%') and gus.repetition in ('DIA','SEM'))
-                  OR (gus.repetition = 'MES' and  DAY(now()) = DAY(gus.date_from))
-                 )
-                 AND per.user_id = 3
-                 AND gus.end_time < CAST(now() as time)
-            GROUP BY grp.title , gus.repetition , gus.rep_days , gus.start_time , gus.end_time
-            HAVING COUNT(grp.group_id) > 0;";
+            FROM users per 
+            INNER JOIN group_users gus ON per.user_id = gus.user_id
+            INNER JOIN groups grp ON gus.group_id = grp.group_id
+            INNER JOIN tasks tsk ON grp.group_id = tsk.group_id
+            LEFT JOIN task_log tlg ON tsk.task_id = tlg.task_id AND date_format(tlg.start_date,'%Y-%m-%d') = date_format(now(),'%Y-%m-%d')
+            WHERE (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now())+1, 'LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'),'%') OR gus.rep_days = 'TODOS')
+            AND per.user_id = :user_id
+            AND gus.start_time < CAST(now() as time)
+            GROUP BY grp.title, gus.repetition, gus.rep_days, gus.start_time, gus.end_time
+            HAVING COUNT(tsk.task_id) > 0";
 
         $statement = $connection->execute($query,
             [
@@ -541,6 +541,52 @@ class UsersController extends AppController
             ],
             [   
                 'user_id' => 'integer'
+            ]
+        );
+
+        $response = $statement->fetchAll();
+
+        return $response;
+    }
+
+    // Query to get Pending Tasks by User and other data
+    // @id == USER_ID
+    // Author: Pablo Rodriguez
+    // Arranged: Ricardo Andrés Nakanishi || Last Update: 03/05/2019
+
+    private function pendingTasksUser($id)
+    {
+        $connection = ConnectionManager::get('default');
+
+        $query = "
+            SELECT 
+                dias.date_to_compare,
+                gop.description,
+                MAX(gur.start_time) inicio,
+                MAX(gur.repetition) repite,
+                MAX(gur.rep_days) dias_rep,
+                tsk.description_1 tarea,
+                COUNT(stp.step_order) pasos,
+                COUNT(tlg.step_id) hechos
+            FROM group_users gur
+            INNER join groups gop ON gur.group_id = gop.group_id
+            LEFT OUTER JOIN tasks tsk ON gur.group_id = tsk.group_id 
+            LEFT OUTER JOIN steps stp ON stp.task_id = tsk.task_id
+            INNER join (select curdate() date_to_compare, elt(weekday(curdate())+1,'LU','MA','MI','JU','VI','SA','DO') date_name from dual UNION ALL select date_add(curdate(), interval -1 DAY), elt(weekday(date_add(curdate(), interval -1 DAY))+1,'LU','MA','MI','JU','VI','SA','DO') date_name from dual UNION ALL select date_add(curdate(), interval -2 DAY), elt(weekday(date_add(curdate(), interval -2 DAY))+1,'LU','MA','MI','JU','VI','SA','DO') date_name from dual UNION ALL select date_add(curdate(), interval -3 DAY), elt(weekday(date_add(curdate(), interval -3 DAY))+1,'LU','MA','MI','JU','VI','SA','DO') date_name from dual UNION ALL select date_add(curdate(), interval -4 DAY), elt(weekday(date_add(curdate(), interval -4 DAY))+1,'LU','MA','MI','JU','VI','SA','DO') date_name from dual) dias ON (gur.rep_days = 'TODOS' OR (gur.rep_days LIKE concat('%', dias.date_name, '%') and gur.repetition in ('DIA','SEM')) OR (gur.repetition = 'MES' and  DAY(dias.date_to_compare) = DAY(gur.date_from)))
+            LEFT OUTER JOIN task_log tlg ON DATE(tlg.start_date) = dias.date_to_compare and tlg.step_id = stp.step_id and tlg.user_id = gur.user_id
+            WHERE
+                gur.user_id = :id                                                                -- Usuario
+                and dias.date_to_compare between gur.date_from and ifnull(date_to,'2999-01-01')   -- Validez
+            GROUP BY 
+                dias.date_to_compare , gop.description, tsk.task_order, tsk.description_1
+            ORDER BY date_to_compare desc";
+        
+        $statement = $connection->execute($query,
+            [
+                'id' => $id
+            ],
+            [   
+                'id' => 'integer'
             ]
         );
 

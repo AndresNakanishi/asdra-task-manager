@@ -35,7 +35,7 @@ $this->assign('title', $title);?>
                                     </div>
                                 </a>
                                 <div class="updateContainerDataItemActions">
-                                    <a class="updateContainer-iconSize" href="#"><i class="fas fa-bars"></i></a>
+                                    <a class="updateContainer-iconSize" href="<?= $this->Url->build('/', true) ?>person/pending-tasks/<?= $user['id'] ?>"><i class="fas fa-bars"></i></a>
                                     <a class="updateContainer-iconSize disabled" target="_blank" href="https://api.whatsapp.com/send?phone=<?= $user['phone'] ?>&text=Hola <?= $user['name'] ?>, está todo bien?"><i class="fas fa-phone"></i></a>
                                 </div>
                             </div>

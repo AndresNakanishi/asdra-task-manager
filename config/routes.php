@@ -27,6 +27,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/in-charge', ['controller' => 'Users', 'action' => 'inCharge']);
     $routes->connect('/person/edit/*', ['controller' => 'Users', 'action' => 'person']);
     $routes->connect('/person/add', ['controller' => 'Users', 'action' => 'add']);
+    $routes->connect('/person/pending-tasks/*', ['controller' => 'Users', 'action' => 'pendingTasks']);
     $routes->connect('/tutor/add/*', ['controller' => 'Users', 'action' => 'addTutor']);
     $routes->connect('/myprofile/*', ['controller' => 'Users', 'action' => 'profile']);
 
