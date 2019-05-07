@@ -22,9 +22,6 @@
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>groups">Grupo de Tareas</a>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Reportes</a>
-                    </li>
                     <li class="nav-item mr-5">
                         <a class="nav-link" href="<?= $this->Url->build('/', true) ?>logout">Salir</a>
                     </li>

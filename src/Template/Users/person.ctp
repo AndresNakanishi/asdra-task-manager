@@ -38,7 +38,6 @@
                                                     <?php if ($super['role'] == 'TUT'): ?>
                                                         <td><?= $super['role'] ?></td>
                                                         <td>                    
-                                                            <a href="#" class="btn btn-info btn-sm disabled border-dark">Reasignar</a>
                                                         </td>
                                                     <?php else: ?>
                                                         <td><?= $super['role'] ?></td>
