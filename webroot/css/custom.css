@@ -214,7 +214,7 @@ input[id="search-input"]{
 .profileContainerEdit{
     display: grid;
     grid-gap: 10px;
-    grid-template-columns: 70% 1fr;
+    grid-template-columns: 50% 1fr;
 }
 
 .profileContainer-form{
@@ -253,7 +253,7 @@ input[id="search-input"]{
 }
 
 .tutorTable{
-    width: 70%;
+    width: 100%;
 }
 
 

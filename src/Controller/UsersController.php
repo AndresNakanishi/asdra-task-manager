@@ -136,6 +136,53 @@ class UsersController extends AppController
         $this->set(compact('users'));
     }
 
+
+    // People in Charge Initialization - Screen 2
+    // Purpose: Clear session
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
+
+    public function initTutors()
+    {
+        $this->autoRender = false;
+        $session = $this->getRequest()->getSession();
+        $session->delete('is_search');
+        $session->delete('filter');
+        return $this->redirect(['action' => 'tutors']);
+    }
+
+    // People in Charge - Screen 2
+    // Author: Ricardo Andrés Nakanishi || Last Update: 08/04/2019
+
+    public function tutors()
+    {
+        $session = $this->getRequest()->getSession();
+        $this->viewBuilder()->setLayout('asdra-layout');
+        $this->set('is_search', 0);
+        // Búsqueda
+
+        if ($this->request->is('post')) {
+            $session->delete('is_search');
+            $session->delete('filter');
+    
+            $filter = $this->request->getData()['filter'];
+
+            $session->write('is_search', 1);
+            $session->write('filter', $filter);
+            
+            $users = $this->getTutors($filter);
+
+            $this->set('is_search', 1);
+            $this->set('filter', $filter);
+        } else {
+            $users = $this->getTutors();
+        }
+
+
+        // Set Users
+        $this->set(compact('users'));
+    }
+
+
     // Person - Screen 3
     // Author: Ricardo Andrés Nakanishi || Last Update: 09/04/2019
     public function person($id = null)
@@ -205,13 +252,14 @@ class UsersController extends AppController
                 $img = str_replace(' ', '+', $img);
                 $fileData = base64_decode($img);
                 unset($data['avatar-code']);
-                    // Set Photo
+                // Set Photo
                 $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
             // Image
             $data['name'] = strtoupper($data['name']);
             $data['address'] = strtoupper($data['address']);
             $data['user_type'] = 'PER';
             $data['token'] = $this->generate_token(8);
+            die;
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->createSupevisorTutorRelationship($user, $this->Auth->user('user_id'));
@@ -226,7 +274,7 @@ class UsersController extends AppController
 
     // Add Tutor Screen 4
     // Author: Ricardo Andrés Nakanishi || Last Update: 15/04/2019
-    public function addTutor($id = null)
+    public function addTutor()
     {
         // Set Session
         $session = $this->getRequest()->getSession();
@@ -239,9 +287,7 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             // Set Photo
-            $rol = $data['rol'];
-            $company = $data['company'];
-            $data['user_type'] = 'PER';
+            $data['user_type'] = $data['rol'];
             $data['name'] = strtoupper($data['name']);
             $data['address'] = strtoupper($data['address']);
             // Image            
@@ -250,23 +296,67 @@ class UsersController extends AppController
                 $img = str_replace(' ', '+', $img);
                 $fileData = base64_decode($img);
                 unset($data['avatar-code']);
-                    // Set Photo
+                // Set Photo
                 $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
             // Image
             unset($data['rol']);
-            unset($data['company']);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
-                $this->createSupevisorRelationship($id, $user, $rol, $company);
                 $this->Flash->success(__('Agregaste correctamente un tutor.'));
             } else {
                 $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
             }
-            return $this->redirect(['action' => 'person',$id]);
+            return $this->redirect(['action' => 'tutors']);
         }
         $companies = TableRegistry::get('companies')->find('list');
-        $this->set(compact('user','companies'));
+        $this->set(compact('user'));
     }
+
+    public function assignTutor($id = null)
+    {   
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        
+        // Get User
+        $user = $this->Users->get($id);
+        $tutors = $this->Users->find('all', ['conditions' => ['user_type' => 'CHF']])->all();
+        $companies = TableRegistry::get('companies')->find('all')->all();
+        if ($this->request->is('post')) {
+            $data = $this->request->getData();
+            $rol = $data['rol'];
+            $company = $data['company'];
+            $person = $data['user_id'];
+            $supervisor = $data['supervisor_id'];
+            if ($this->createSupevisorRelationship($person, $supervisor, $rol, $company)) {
+                $this->Flash->success(__('Agregaste correctamente un tutor.'));
+            } else {
+                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            }
+            return $this->redirect(['action' => 'person',$data['user_id']]);
+        }
+        $this->set(compact('user','tutors','companies'));
+    }
+
+
+    public function editTutor($id = null)
+    {   
+        // Set Session
+        $session = $this->getRequest()->getSession();
+        
+        // Set Layout
+        $this->viewBuilder()->setLayout('asdra-layout');
+        
+        // Get User
+        $user = $this->Users->get($id, [
+            'contain' => []
+        ]);
+
+        $this->set(compact('user'));
+    }
+
 
     public function edit($id = null)
     {
@@ -353,7 +443,20 @@ class UsersController extends AppController
             $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
 
-        return $this->redirect( Router::url( $this->referer(), true ) );
+        return $this->redirect(['action' => 'tutors']);
+    }
+
+    public function deleteRelationUserTutor($supervisor_id, $person_id)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $supervisorTable = TableRegistry::get('supervisors');  
+        $supervisor = $supervisorTable->find('all', ['conditions' => ['supervisor_id' => $supervisor_id, 'person_id' => $person_id]])->all();
+        foreach ($supervisor as $relation) {
+            $supervisorTable->delete($relation);
+        }
+        $this->Flash->success(__('El tutor/familiar ha sido removido.'));
+        return $this->redirect(['action' => 'person', $person_id]);
+
     }
 
     // Profile - Screen 11
@@ -418,7 +521,7 @@ class UsersController extends AppController
             'company_id'
         ])->values([
             'person_id' => $person,
-            'supervisor_id' => $supervisor->user_id,
+            'supervisor_id' => $supervisor,
             'rol' => $rol,
             'company_id' => $company
         ])
@@ -498,6 +601,29 @@ class UsersController extends AppController
             ->where([
                 'AND' =>
                     ['sup.supervisor_id' => $id],
+                    ['UPPER(users.name) LIKE' => '%'.$filter.'%']
+            ])
+            ->enableHydration(false)
+            ->toList();
+
+        return $users;
+    }
+
+    private function getTutors($filter = null)
+    {
+        $filter = strtoupper($filter);
+        $usersTable = TableRegistry::get('users');
+
+        $users = $usersTable->find()
+            ->select([
+                'id' => 'users.user_id',
+                'name' => 'users.name',
+                'phone' => 'users.phone',
+                'photo' => 'users.photo'
+                ])
+            ->where([
+                'AND' =>
+                    ['users.user_type' => 'CHF'],
                     ['UPPER(users.name) LIKE' => '%'.$filter.'%']
             ])
             ->enableHydration(false)

@@ -25,10 +25,16 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/dashboard', ['controller' => 'Users', 'action' => 'dashboard']);
     $routes->connect('/init-in-charge', ['controller' => 'Users', 'action' => 'initInCharge']);
     $routes->connect('/in-charge', ['controller' => 'Users', 'action' => 'inCharge']);
+    // Tutores
+    $routes->connect('/init-tutors', ['controller' => 'Users', 'action' => 'initTutors']);
+    $routes->connect('/tutors', ['controller' => 'Users', 'action' => 'tutors']);
+    $routes->connect('/tutor/add', ['controller' => 'Users', 'action' => 'addTutor']);
+    $routes->connect('/tutor/edit/*', ['controller' => 'Users', 'action' => 'editTutor']);
+    $routes->connect('/tutor/assign/*', ['controller' => 'Users', 'action' => 'assignTutor']);
+    //Tutores
     $routes->connect('/person/edit/*', ['controller' => 'Users', 'action' => 'person']);
     $routes->connect('/person/add', ['controller' => 'Users', 'action' => 'add']);
     $routes->connect('/person/pending-tasks/*', ['controller' => 'Users', 'action' => 'pendingTasks']);
-    $routes->connect('/tutor/add/*', ['controller' => 'Users', 'action' => 'addTutor']);
     $routes->connect('/myprofile/*', ['controller' => 'Users', 'action' => 'profile']);
 
     $routes->fallbacks(DashedRoute::class);

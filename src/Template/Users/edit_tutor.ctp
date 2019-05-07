@@ -21,72 +21,6 @@
                             <!-- Dirección -->
                             <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
                         <?= $this->Form->end() ?>
-                            <div class="row mb-3 mt-3">
-                                <div class="col-lg-12">
-                                    Su código de activación de <?= $user->name ?> es: <strong><?= $user->token ?></strong>
-                                </div>
-                            </div>
-                            <div class="tutorTable mt-2">    
-                                <h4>Tutores a Cargo: </h4><br>                
-                                <table class="table text-center">
-                                    <tbody>
-                                        <?php if (isset($supervisors)): ?>
-                                            <?php foreach ($supervisors as $super): ?>
-                                                <tr>
-                                                    <td><?= $super['name'] ?></td>
-                                                    <td><?= $super['phone'] ?></td>
-                                                    <?php if ($super['role'] == 'TUT'): ?>
-                                                        <td><?= $super['role'] ?></td>
-                                                        <td>                    
-                                                            <a href="#" class="btn btn-info btn-sm disabled border-dark">Reasignar</a>
-                                                        </td>
-                                                    <?php else: ?>
-                                                        <td><?= $super['role'] ?></td>
-                                                        <td>                    
-                                                            <?= $this->Form->postLink(
-                                                                'Eliminar', 
-                                                                ['action' => 'deleteRelationUserTutor', $super['id'], $user->user_id], 
-                                                                [
-                                                                    'confirm' => __('¿Está seguro que eliminar a "{0}" como tutor?', $super['name']),
-                                                                    'class' => 'btn btn-sm btn-danger border-dark'
-                                                                ]
-                                                            ) ?>  
-                                                        </td>
-                                                    <?php endif ?>
-                                                </tr>
-                                            <?php endforeach ?>
-                                        <?php else: ?>
-                                            <tr>
-                                                <td colspan="3">
-                                                    No tiene tutores
-                                                </td>
-                                            </tr>
-                                        <?php endif ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <a href="<?= $this->Url->build('/', true) ?>tutor/assign/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
-                            </div>
-                            <div class="profileContainerTasks mt-3">
-                                <h6>Tipos de Tareas Asignadas</h6>
-                                <div class="profileContainerTasks-tasks">
-                                    <!-- Group Type 1 ==> Tareas del trabajo  -->
-                                    <a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user->user_id?>/1" class="task text-center">
-                                        <div class="icon rounded-circle">
-                                            <i class="icon-fontawesome fas fa-wrench"></i>
-                                        </div>
-                                        <p class="mt-3">En el trabajo</p>
-                                    </a>
-                                    <!-- Group Type 2  ==> Tareas de la casa -->
-                                    <a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user->user_id?>/2" class="task text-center">
-                                        <div class="icon rounded-circle">
-                                            <i class="icon-fontawesome fas fa-home"></i>
-                                        </div>
-                                        <p class="mt-3">En casa</p>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                         <!-- Imagen -->
                         <div class="d-flex flex-column align-items-center text-center">
@@ -130,18 +64,13 @@
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <?= $this->Form->postLink(
                         "¿Desea eliminar a $user->name de la base de datos?", 
-                        ['action' => 'delete', $user->user_id], 
+                        ['action' => 'deleteTutor', $user->user_id], 
                         [
                             'confirm' => __('¿Está seguro que eliminar a "{0}" de la base de datos?', $user->name),
                             'class' => 'link'
                         ]
                     ) ?> 
                     <div class="d-flex">
-                        <?= $this->Html->link(
-                            'Generar Código de Activación Nuevo', 
-                            ['action' => 'generateNewToken', $user->user_id], 
-                            ['style' => 'padding-right: 10px;', 'class' => 'btn btn-info border-dark mr-3']
-                        ) ?>   
                         <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
                         <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>
