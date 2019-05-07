@@ -6,7 +6,6 @@ $this->assign('title', $title);?>
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body d-flex align-items-end flex-column">
-                <h6 class="actualDate mb-3"><b><?= date('d/m/Y'); ?></b></h6>
                 <?= $this->Form->create(null, ['class' => 'form-inline', 'url' => ['action' => 'dashboard']]) ?>
                     <?php if (isset($filter)): ?>
                         <input type="search" class="form-control usersContainerSearch" id="search-input" name="filter" placeholder="Buscar..." autocomplete="off" value="<?= $filter ?>" style="position: relative; vertical-align: top;">
@@ -15,7 +14,7 @@ $this->assign('title', $title);?>
                     <?php endif ?>
                 <?= $this->Form->end() ?>
                 <div class="updateContainerHeader d-flex justify-content-between align-items-center mt-3">
-                    <h5>Con tareas atrasadas a la <?= date('H:i A'); ?></h5>
+                    <h5><?= date('d/m/Y'); ?> - Con tareas atrasadas a la <?= date('H:i A'); ?></h5>
                     <a class="updateContainer-iconSize" href="#" onclick="location.reload();"><i class="fas fa-sync-alt"></i></a>
                 </div>
                 <div class="updateContainerData">

@@ -12,7 +12,9 @@ $days = [
 	'MA' => 'Martes',
 	'MI' => 'Miércoles',
 	'JU' => 'Jueves',
-	'VI' => 'Viernes'
+	'VI' => 'Viernes',
+	'SA' => 'Sábado',
+	'DO' => 'Domingo'
 ];
 
 ?>
@@ -34,7 +36,11 @@ $days = [
 				        </div>
 				        <div class="form-group col-lg-12">
 				        	<label for="rep_days">Días:</label>
-							<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days']);?>
+							<?= $this->Form->select('rep_days[]', $days, [
+								'multiple',
+								'class' => 'form-control rep-days',
+								'value' => $selected
+							]);?>
 				        </div>
 				        <div class="form-group col-lg-6">
 				        	<label for="start-time">Desde:</label>

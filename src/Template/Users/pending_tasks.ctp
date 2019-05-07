@@ -11,18 +11,16 @@
                     	<tr>
                     		<th>Fecha</th>
                     		<th>Tarea</th>
-                    		<th>Se trabó en el paso</th>
-                    		<th>Cantidad de Pasos</th>
-                    		<th>Hechos</th>
+                    		<th>Microtarea</th>
+                    		<th>Pasos Hechos</th>
                     	</tr>
                     </thead>
                     <tbody>
 						<?php foreach ($pendingTasks as $task): ?>
                             <tr>
-                                <td><?= date('d/m/Y', strtotime($task[0]))?></td>
+                                <td><?= date('d/m', strtotime($task[0]))?></td>
                                 <td><?= $task[1]?></td>
                                 <td><?= $task[5]?></td>
-                                <td><?= $task[6]?></td>
                                 <td><?= $task[7]?>/<?= $task[6]?></td>
                             </tr>
                         <?php endforeach ?>

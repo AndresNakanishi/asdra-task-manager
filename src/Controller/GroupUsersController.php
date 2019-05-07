@@ -33,7 +33,7 @@ class GroupUsersController extends AppController
         $this->viewBuilder()->setLayout('asdra-layout');
 
         $groupUser = $this->GroupUsers->find('all', ['conditions' => ['group_id' => $group_id, 'user_id' => $user_id]])->first();
-
+        $selected = explode("-",$groupUser->rep_days);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
             if ($data['rep_days'] !== null or $data['rep_days'] !== '') {
@@ -59,7 +59,7 @@ class GroupUsersController extends AppController
             return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
         }
 
-        $this->set(compact('groupUser'));
+        $this->set(compact('groupUser','selected'));
     }
     /**
      * Add method
