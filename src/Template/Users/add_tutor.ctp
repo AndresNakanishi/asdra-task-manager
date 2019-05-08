@@ -66,7 +66,7 @@ $this->assign('title', $title);?>
             </div>
 
                 <div class="col-lg-12 d-flex align-items-center mt-3">
-                    <a href="<?= $this->Url->build('/', true) ?>tutors" class="btn btn-danger border-dark">Cancelar</a>    
+                    <a href="<?= $this->Url->build('/', true) ?>users/tutors" class="btn btn-danger border-dark">Cancelar</a>    
                     <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark ml-3" value="Guardar">    
                 </div>
             </div>

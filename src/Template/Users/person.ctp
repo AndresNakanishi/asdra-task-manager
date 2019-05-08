@@ -65,7 +65,7 @@
                                 </table>
                             </div>
                             <div class="row">
-                                <a href="<?= $this->Url->build('/', true) ?>tutor/assign/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
+                                <a href="<?= $this->Url->build('/', true) ?>users/assign-tutor/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
                             </div>
                             <div class="profileContainerTasks mt-3">
                                 <h6>Tipos de Tareas Asignadas</h6>

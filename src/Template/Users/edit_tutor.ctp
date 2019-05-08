@@ -71,7 +71,7 @@
                         ]
                     ) ?> 
                     <div class="d-flex">
-                        <a href="<?= $this->Url->build('/', true) ?>tutors" class="btn btn-danger border-dark mr-3">Cancelar</a>    
+                        <a href="<?= $this->Url->build('/', true) ?>users/tutors" class="btn btn-danger border-dark mr-3">Cancelar</a>    
                         <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>
                 </div>

@@ -21,7 +21,7 @@ $this->assign('title', $title);?>
                                 Aún no tenes usuarios
                             <?php else: ?>
                                 <?php foreach ($users as $user): ?>
-                                    <a href="<?php echo $this->Url->build('/', true) ?>tutor/edit/<?= $user['id'] ?>" class="userCard2 d-flex flex-column">
+                                    <a href="<?php echo $this->Url->build('/', true) ?>users/edit-tutor/<?= $user['id'] ?>" class="userCard2 d-flex flex-column">
                                         <?php if (strlen($user['photo']) > 80): ?>
                                               <img class="usersContainerItemsImg rounded-circle" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
                                         <?php else: ?>
@@ -35,7 +35,7 @@ $this->assign('title', $title);?>
                             <?php endif ?>
                         </div>
                         <div class="d-flex justify-content-end">
-                            <a href="<?php echo $this->Url->build('/', true) ?>tutor/add" class="btn btn-primary border-dark"><i class="fas fa-plus-circle"></i> Agregar Tutor</a>
+                            <a href="<?php echo $this->Url->build('/', true) ?>users/add-tutor" class="btn btn-primary border-dark"><i class="fas fa-plus-circle"></i> Agregar Tutor</a>
                         </div>
                     </div>
                 </div>
