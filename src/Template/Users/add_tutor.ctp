@@ -11,7 +11,7 @@ $this->assign('title', $title);?>
                 <h4 class="profileContainer-title">Nuevo de Tutor</h4>
                 <div class="profileContainer-content mt-3">
                     <div class="profileContainerEdit">            
-                        <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center']) ?>
+                        <?= $this->Form->create($user, ['type' => 'file', 'autocomplete' => 'off', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center']) ?>
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                             <input type="text" id="photo" name="photo" style="display: none">
                             <!-- Nombre Completo -->
@@ -22,11 +22,11 @@ $this->assign('title', $title);?>
                             </div>
                             <!-- Dirección -->
                             <div class="form-group col-lg-12">
-                              <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección (Requerido)">
+                              <input class="col-lg-12 form-control mt-3" required autocomplete="off" name="address" type="text" placeholder="Dirección (Requerido)">
                             </div>
                             <!-- Password -->
                             <div class="form-group col-lg-12">
-                              <input class="col-lg-12 form-control mt-3" required name="password" type="password" placeholder="Contraseña">
+                              <input class="col-lg-12 form-control mt-3" required name="password" autocomplete="off" type="password" placeholder="Ingrese una contraseña">
                             </div>
                             <div class="form-group col-lg-12">
                               <label for="company_id">Compañía:</label>

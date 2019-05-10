@@ -321,8 +321,8 @@ class UsersController extends AppController
         
         // Get User
         $user = $this->Users->get($id);
-        $tutors = $this->Users->find('all', ['conditions' => ['user_type' => 'CHF']])->all();
-        $companies = TableRegistry::get('companies')->find('all')->all();
+        $tutors = $this->Users->find('all', ['conditions' => ['user_type' => 'TUT']])->all();
+        $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $rol = $data['rol'];
@@ -799,5 +799,17 @@ class UsersController extends AppController
        $chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
        $password = substr(str_shuffle($chars), 0, $length);
        return $password;
+    }
+
+    // AJAX
+    public function getusercompany($user_id) {
+        $this->autoRender = false;
+        $user = $this->Users->get($user_id);
+        $company = TableRegistry::get('companies')->find('all', ['conditions' => ['company_id' => $user->company_id]])->first();
+        if ($company !== false) {
+            $return = '<option value="' . $company->company_id . '">' . $company->company_name . '</option> ';
+            $this->response->body($return);
+            return $this->response;
+        }
     }
 }

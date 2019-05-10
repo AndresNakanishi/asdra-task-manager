@@ -10,7 +10,7 @@
                 <input type="text" id="user_id" name="user_id" value="<?= $user->user_id ?>" style="display: none">
                 <div class="form-group">
                   <label for="group_id">Tutor:</label>
-                  <select class="form-control group_id_select" name="supervisor_id">
+                  <select id="supervisor" class="form-control group_id_select" name="supervisor_id">
                     <option value="-" disabled selected>Selecciona un tutor</option>
                     <?php foreach ($tutors as $tutor): ?>
                       <option value="<?= $tutor->user_id ?>"><?= $tutor->name ?></option>
@@ -27,12 +27,9 @@
                 </div>
                 <div class="form-group">
                     <label for="company">Compañia: </label>
-                    <select name="company" class="col-lg-12 form-control">     
-                        <option value="" selected>Sin compañía</option>
-                        <?php foreach ($companies as $company): ?>
-                            <option value="<?= $company->company_id ?>"><?= $company->company_name ?></option>
-                        <?php endforeach ?>
-                    </select>                  
+                    <select id="company" class="col-lg-12 form-control" name="company">
+                        <option value="" selected disabled>Compañia</option>
+                    </select>
                 </div>
   		        <?= $this->Form->end() ?>
             </div>
@@ -52,4 +49,17 @@
   $(document).ready(function() {
     $('.group_id_select').select2();
   });
+
+  $('#supervisor').on('change', function () {
+        var id = $(this).val();
+        $.ajax({
+            type: 'GET',
+            async: true,
+            cache: false,
+            url: '<?php echo $this->Url->build('/', true) ?>users/getusercompany/'+id,
+            success: function (data) {
+                $("#company").html(data);
+            }
+        });
+    });
 </script>
