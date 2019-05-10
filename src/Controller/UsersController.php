@@ -259,7 +259,6 @@ class UsersController extends AppController
             $data['address'] = strtoupper($data['address']);
             $data['user_type'] = 'PER';
             $data['token'] = $this->generate_token(8);
-            die;
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->createSupevisorTutorRelationship($user, $this->Auth->user('user_id'));
