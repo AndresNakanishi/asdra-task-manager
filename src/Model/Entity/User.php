@@ -2,6 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
+use Cake\Auth\DefaultPasswordHasher; 
 use Cake\ORM\TableRegistry;
 
 /**
@@ -45,7 +46,8 @@ class User extends Entity
         'hash' => true,
         'token' => true,
         'address' => true,
-        'locale' => true
+        'locale' => true,
+        'company_id' => true
     ];
 
     /**

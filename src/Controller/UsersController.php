@@ -287,7 +287,7 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             // Set Photo
-            $data['user_type'] = $data['rol'];
+            $data['user_type'] = 'TUT';
             $data['name'] = strtoupper($data['name']);
             $data['address'] = strtoupper($data['address']);
             // Image            
@@ -299,7 +299,6 @@ class UsersController extends AppController
                 // Set Photo
                 $data['photo'] = $this->setAvatar($data['photo'], $data['name'], $fileData);
             // Image
-            unset($data['rol']);
             $user = $this->Users->patchEntity($user, $data);
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Agregaste correctamente un tutor.'));
@@ -308,8 +307,8 @@ class UsersController extends AppController
             }
             return $this->redirect(['action' => 'tutors']);
         }
-        $companies = TableRegistry::get('companies')->find('list');
-        $this->set(compact('user'));
+        $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
+        $this->set(compact('user','companies'));
     }
 
     public function assignTutor($id = null)
@@ -354,7 +353,8 @@ class UsersController extends AppController
             'contain' => []
         ]);
 
-        $this->set(compact('user'));
+        $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
+        $this->set(compact('user','companies'));
     }
 
 
@@ -365,6 +365,10 @@ class UsersController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
+
+            if (isset($data['password']) and $data['password'] == '') {
+                unset($data['password']);
+            }
 
             // Set Photo
             if ($data['photo'] == '') {
@@ -623,7 +627,7 @@ class UsersController extends AppController
                 ])
             ->where([
                 'AND' =>
-                    ['users.user_type' => 'CHF'],
+                    ['users.user_type' => 'TUT'],
                     ['UPPER(users.name) LIKE' => '%'.$filter.'%']
             ])
             ->enableHydration(false)

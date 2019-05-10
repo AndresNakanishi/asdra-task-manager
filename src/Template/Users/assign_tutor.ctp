@@ -42,7 +42,7 @@
                 	'form' => 'addForm',
                 	'id' => 'accept-button'
             	]) ?>
-				<a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark">Cancelar</a>  
+				<a href="<?= $this->Url->build('/', true) ?>person/edit/<?= $user->user_id ?>" class="btn btn-danger border-dark">Cancelar</a>  
             </div>
         </div>
     </div>

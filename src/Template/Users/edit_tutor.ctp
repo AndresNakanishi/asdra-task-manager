@@ -11,15 +11,27 @@
                 <div class="profileContainer-content mt-3">
                     <div class="profileContainerEdit">
                         <div>     
-                        <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-start', 'url' => ['controller' => 'Users', 'action' => 'edit', $user->user_id]]) ?>
+                        <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'autocomplete' => 'off', 'class' => 'profileContainer-form d-flex flex-wrap align-content-start', 'url' => ['controller' => 'Users', 'action' => 'edit', $user->user_id]]) ?>
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                             <input type="text" id="photo" name="photo" style="display: none">                            
                             <!-- Nombre Completo -->
-                            <input class="col-lg-8 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
+                            <div class="form-group col-lg-12 d-flex justify-content-between">
+                              <input class="col-lg-7 form-control" required name="name" id="name" type="text" value="<?= $user->name ?>" placeholder="Nombre Completo (Requerido)">
                             <!-- Teléfono -->
-                            <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                              <input class="col-lg-5 form-control" required name="phone" value="<?= $user->phone ?>" type="text" placeholder="Teléfono (Requerido)">
+                            </div>
                             <!-- Dirección -->
-                            <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" required name="address" type="text" value="<?= $user->address ?>" placeholder="Dirección (Requerido)">
+                            </div>
+                            <!-- Password -->
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" name="password" type="password" placeholder="Cambiar Contraseña">
+                            </div>
+                            <div class="form-group col-lg-12">
+                              <label for="company_id">Compañía:</label>
+                              <?= $this->Form->select('company_id', $companies, ['default' => '', 'class' => 'form-control']);?>
+                            </div>
                         <?= $this->Form->end() ?>
                         </div>
                         <!-- Imagen -->
@@ -71,7 +83,7 @@
                         ]
                     ) ?> 
                     <div class="d-flex">
-                        <a href="<?= $this->Url->build('/', true) ?>users/tutors" class="btn btn-danger border-dark mr-3">Cancelar</a>    
+                        <a href="<?= $this->Url->build('/', true) ?>users/tutors" class="btn btn-danger border-dark mr-3">Volver</a>    
                         <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Confirmar Cambios">    
                     </div>
                 </div>

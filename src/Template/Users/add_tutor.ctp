@@ -15,17 +15,22 @@ $this->assign('title', $title);?>
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                             <input type="text" id="photo" name="photo" style="display: none">
                             <!-- Nombre Completo -->
-                            <input class="col-lg-7 form-control" required name="name" id="name" type="text" placeholder="Nombre Completo (Requerido)">
+                            <div class="form-group col-lg-12 d-flex justify-content-between">
+                              <input class="col-lg-7 form-control" required name="name" id="name" type="text" placeholder="Nombre Completo (Requerido)">
                             <!-- Teléfono -->
-                            <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono (Requerido)">
+                              <input class="col-lg-5 form-control" required name="phone" type="text" placeholder="Teléfono (Requerido)">
+                            </div>
                             <!-- Dirección -->
-                            <input class="col-lg-11 form-control mt-3" required name="address" type="text" placeholder="Dirección (Requerido)">
-                            <div class="col-lg-11 m-0 p-0">
-                                <select name="rol" class="col-lg-12 form-control" required>     
-                                    <option disabled value="" selected>Rol</option>
-                                    <option value="FAM">Familiar</option>
-                                    <option value="CHF">Jefe</option>
-                                </select>                  
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección (Requerido)">
+                            </div>
+                            <!-- Password -->
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" required name="password" type="password" placeholder="Contraseña">
+                            </div>
+                            <div class="form-group col-lg-12">
+                              <label for="company_id">Compañía:</label>
+                              <?= $this->Form->select('company_id', $companies, ['default' => '', 'class' => 'form-control']);?>
                             </div>
                         <?= $this->Form->end() ?>
 
