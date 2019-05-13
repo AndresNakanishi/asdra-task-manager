@@ -126,7 +126,6 @@ class UsersTable extends Table
         $rules->add($rules->isUnique(['user']));
         $rules->add($rules->isUnique(['token']));
         $rules->add($rules->existsIn(['locale_id'], 'Locales'));
-        $rules->add($rules->existsIn(['company_id'], 'Companies'));
 
         return $rules;
     }

@@ -365,8 +365,14 @@ class UsersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
 
+
+            // If password
             if (isset($data['password']) and $data['password'] == '') {
                 unset($data['password']);
+            }
+            // If company
+            if (isset($data['company_id']) and $data['company_id'] == '') {
+                $data['company_id'] = null;
             }
 
             // Set Photo
