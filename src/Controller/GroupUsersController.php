@@ -79,16 +79,27 @@ class GroupUsersController extends AppController
             // Add Data
             $data['user_id'] = $user_id;
             $data['group_type_id'] = $group_type;
-            // Arrange Date && Time
+            // Time
             $data['start_time'] = date('H:i:s',strtotime($data['start_time']));
             $data['end_time'] = date('H:i:s',strtotime($data['end_time']));
+            // Time
+
+            // Date
             $data['start_date'] = date('Y-m-d 00:00:00',strtotime($data['start_date']));
+            $hola = explode('/',$data['end_date']);
+            $end = '';
+            foreach ($hola as $key => $value) {
+                $end = $end.$value.'-';
+            }
+            $end = substr($end, 0, -1);
+            $data['end_date'] = $end;
             if ($data['end_date'] !== '') {
                 $data['end_date'] = date('Y-m-d 00:00:00',strtotime($data['end_date']));
             } else {
                 $data['end_date'] = null;
             }
-            if ($data['end_date'] == null || (strtotime($data['end_date']) > strtotime($data['start_date']))) {
+            // Date
+            if ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) ) ) {
                 try {
                     $supTable = TableRegistry::get('group_users');
                     $insert = $supTable->query();
