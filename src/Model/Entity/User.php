@@ -46,8 +46,9 @@ class User extends Entity
         'hash' => true,
         'token' => true,
         'address' => true,
+        'company_id' => true,
         'locale' => true,
-        'company_id' => true
+        'company' => true
     ];
 
     /**
@@ -59,7 +60,6 @@ class User extends Entity
         'password',
         'token'
     ];
-
     protected function _setPassword($value)
     {
         if (strlen($value)) {

@@ -27,13 +27,16 @@ class UsersFixture extends TestFixture
         'hash' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'token' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'address' => ['type' => 'string', 'length' => 200, 'null' => true, 'default' => null, 'collate' => 'utf8_spanish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'company_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         '_indexes' => [
             'usr_lca_fk_idx' => ['type' => 'index', 'columns' => ['locale_id'], 'length' => []],
+            'company_id' => ['type' => 'index', 'columns' => ['company_id'], 'length' => []],
         ],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['user_id'], 'length' => []],
             'user' => ['type' => 'unique', 'columns' => ['user'], 'length' => []],
             'token' => ['type' => 'unique', 'columns' => ['token'], 'length' => []],
+            'usr_cmp_fk' => ['type' => 'foreign', 'columns' => ['company_id'], 'references' => ['companies', 'company_id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
             'usr_lca_fk' => ['type' => 'foreign', 'columns' => ['locale_id'], 'references' => ['locales', 'locale_id'], 'update' => 'noAction', 'delete' => 'noAction', 'length' => []],
         ],
         '_options' => [
@@ -62,7 +65,8 @@ class UsersFixture extends TestFixture
                 'locale_id' => 'Lorem ip',
                 'hash' => 'Lorem ipsum dolor sit amet',
                 'token' => 'Lorem ipsum dolor sit amet',
-                'address' => 'Lorem ipsum dolor sit amet'
+                'address' => 'Lorem ipsum dolor sit amet',
+                'company_id' => 1
             ],
         ];
         parent::init();
