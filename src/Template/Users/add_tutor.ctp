@@ -24,9 +24,13 @@ $this->assign('title', $title);?>
                             <div class="form-group col-lg-12">
                               <input class="col-lg-12 form-control mt-3" required autocomplete="off" name="address" type="text" placeholder="Dirección (Requerido)">
                             </div>
+                            <!-- Usuarios -->
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" required autocomplete="off" name="user" type="text" placeholder="Usuario (Requerido)">
+                            </div>
                             <!-- Password -->
                             <div class="form-group col-lg-12">
-                              <input class="col-lg-12 form-control mt-3" required name="password" autocomplete="off" type="password" placeholder="Ingrese una contraseña">
+                              <input class="col-lg-12 form-control mt-3" required autocomplete="off" name="password" type="password" placeholder="Ingrese una contraseña">
                             </div>
                             <div class="form-group col-lg-12">
                               <label for="company_id">Compañía:</label>

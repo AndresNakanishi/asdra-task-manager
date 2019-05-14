@@ -24,6 +24,10 @@
                             <div class="form-group col-lg-12">
                               <input class="col-lg-12 form-control mt-3" required name="address" type="text" value="<?= $user->address ?>" placeholder="Dirección (Requerido)">
                             </div>
+                            <!-- Usuarios -->
+                            <div class="form-group col-lg-12">
+                              <input class="col-lg-12 form-control mt-3" required autocomplete="off" name="user" value="<?= $user->user ?>" type="text" placeholder="Usuario (Requerido)">
+                            </div>
                             <!-- Password -->
                             <div class="form-group col-lg-12">
                               <input class="col-lg-12 form-control mt-3" name="password" type="password" placeholder="Cambiar Contraseña">
