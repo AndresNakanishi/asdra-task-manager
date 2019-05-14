@@ -4,11 +4,11 @@
             <a class="navbar-brand" href="<?= $this->Url->build('/', true) ?>init-dashboard">
                 <img class="asdra-logo" src="<?= $this->Url->build('/', true) ?>img/logo.png" alt="ASDRA Logo">
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="d-flex justify-content-end collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav d-flex align-items-center">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+             <ul class="navbar-nav d-flex align-items-center ml-auto">
                     <li class="nav-item active">
                         <a class="nav-link" href="<?= $this->Url->build('/', true) ?>init-dashboard">Inicio</a>
                     </li>
@@ -32,7 +32,7 @@
                         </a>
                     </li>
                 </ul>
-            </div>
+          </div>
         </nav>
     </div>
 </div>
