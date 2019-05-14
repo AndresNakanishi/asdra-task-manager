@@ -10,7 +10,8 @@ $this->assign('title', $title);?>
             <div class="card-body profileContainer">
                 <h4 class="profileContainer-title">Nuevo de Tutor</h4>
                 <div class="profileContainer-content mt-3">
-                    <div class="profileContainerEdit">            
+                    <div class="profileContainerEdit">  
+                        <div>          
                         <?= $this->Form->create($user, ['type' => 'file', 'autocomplete' => 'off', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center']) ?>
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                             <input type="text" id="photo" name="photo" style="display: none">
@@ -37,42 +38,40 @@ $this->assign('title', $title);?>
                               <?= $this->Form->select('company_id', $companies, ['default' => '', 'class' => 'form-control']);?>
                             </div>
                         <?= $this->Form->end() ?>
+                        </div>
+                        <div class="d-flex flex-column align-items-center text-center">
+                          <div class="col-lg-8" style="margin-top: 30px" id="avatar-div">
+                            <div class="row text-center d-flex flex-column justify-content-center align-items-center" id="div-img-form">
+                                <div class="col-lg-12" style="overflow: hidden;">
+                                    <!-- Foto -->
+                                    <input type="file" class="custom-file-input" name="photo" id="file" style="display:none;">
+
+                                    <label class="btn btn-primary" for="file">
+                                      Seleccionar imagen
+                                    </label>
+                                    <br>
+                                    <p class="m-b-10">Tamaño maximo de imagen: 3 MB.</p>
+                                </div>
+                                <div id="avatar-resize-info" class="col-lg-12 m-b-10" style="display: none">
+                                  <hr class="m-t-0 m-b-10" style="border-color: #cfcfcf">
+                                  Seleccione el area de la imagen que desea subir
+                                </div>
+                                <div class="col-lg-12 d-flex justify-content-center" id="views"></div>
+                                <div class="col-lg-12 m-t-10" id="avatar-size-error" style="color: #930000; display: none">
+                                  La imagen seleccionada supera los 3 MB.
+                                </div>
+                            </div>
+                          </div>
+                          <div class="row text-center m-b-15" id="div-img-loader" style="display: none">
+                              <div class="col-lg-12" style="overflow: hidden; margin-top: 30px">
+                                  <?= $this->Html->image('img-spinner.gif', ["alt" => "Cargando...", "style" => "width: 100%; max-width: 120px;"]); ?>
+                              </div>
+                          </div>
+                        </div>
 
 
                     </div>
                 </div>
-
-
-
-
-
-              <div class="col-lg-8" style="margin-top: 30px" id="avatar-div">
-                <div class="row text-center d-flex flex-column justify-content-center align-items-center" id="div-img-form">
-                    <div class="col-lg-12" style="overflow: hidden;">
-                        <!-- Foto -->
-                        <input type="file" class="custom-file-input" name="photo" id="file" style="display:none;">
-
-                        <label class="btn btn-primary" for="file">
-                          Seleccionar imagen
-                        </label>
-                        <br>
-                        <p class="m-b-10">Tamaño maximo de imagen: 3 MB.</p>
-                    </div>
-                    <div id="avatar-resize-info" class="col-lg-12 m-b-10" style="display: none">
-                      <hr class="m-t-0 m-b-10" style="border-color: #cfcfcf">
-                      Seleccione el area de la imagen que desea subir
-                    </div>
-                    <div class="col-lg-12" id="views"></div>
-                    <div class="col-lg-12 m-t-10" id="avatar-size-error" style="color: #930000; display: none">
-                      La imagen seleccionada supera los 3 MB.
-                    </div>
-                </div>
-            </div>
-            <div class="row text-center m-b-15" id="div-img-loader" style="display: none">
-                <div class="col-lg-12" style="overflow: hidden; margin-top: 30px">
-                    <?= $this->Html->image('img-spinner.gif', ["alt" => "Cargando...", "style" => "width: 100%; max-width: 120px;"]); ?>
-                </div>
-            </div>
 
                 <div class="col-lg-12 d-flex align-items-center mt-3">
                     <a href="<?= $this->Url->build('/', true) ?>users/tutors" class="btn btn-danger border-dark">Cancelar</a>    
@@ -92,8 +91,8 @@ $this->assign('title', $title);?>
     });
 
     var edited = 0;
-    var crop_max_width = 400;
-    var crop_max_height = 400;
+    var crop_max_width = 250;
+    var crop_max_height = 250;
     var jcrop_api;
     var canvas;
     var context;

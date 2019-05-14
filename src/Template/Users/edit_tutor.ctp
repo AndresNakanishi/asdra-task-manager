@@ -68,12 +68,12 @@
                                     </div>
                                 </div>
                             </div>                       
+                            <div class="row text-center m-b-15" id="div-img-loader" style="display: none">
+                                <div class="col-lg-12" style="overflow: hidden; margin-top: 30px">
+                                    <?= $this->Html->image('img-spinner.gif', ["alt" => "Cargando...", "style" => "width: 100%; max-width: 120px;"]); ?>
+                                </div>
+                            </div>
                         </div>    
-                    </div>
-                </div>
-                <div class="row text-center m-b-15" id="div-img-loader" style="display: none">
-                    <div class="col-lg-12" style="overflow: hidden; margin-top: 30px">
-                        <?= $this->Html->image('img-spinner.gif', ["alt" => "Cargando...", "style" => "width: 100%; max-width: 120px;"]); ?>
                     </div>
                 </div>
                 <!-- Foto -->
