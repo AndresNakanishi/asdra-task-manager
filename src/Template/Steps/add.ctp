@@ -30,7 +30,6 @@
 			                    'class' => 'control-label',
 			                    'text' => 'Subtítulo:',
 			                ],
-			                'required',
 			                'placeholder' => 'Subtítulo',
 			                'autocomplete' => 'off'
 			            ]) ?>

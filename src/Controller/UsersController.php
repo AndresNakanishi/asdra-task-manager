@@ -51,8 +51,11 @@ class UsersController extends AppController
     
     public function initDashboard()
     {
-        $this->autoRender = false;
         $session = $this->getRequest()->getSession();
+        $this->autoRender = false;
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
         $session->delete('is_search');
         $session->delete('filter');
         return $this->redirect(['action' => 'dashboard']);
@@ -67,7 +70,11 @@ class UsersController extends AppController
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
         
-        // Búsqueda
+        // SEgún
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
+
 
         if ($this->request->is('post')) {
             $session->delete('is_search');
@@ -114,7 +121,7 @@ class UsersController extends AppController
         $this->set('is_search', 0);
         // Búsqueda
 
-        if ($this->request->is('post')) {
+        if ($this->request->is('post') && $this->Auth->user('user_type') == 'ADM') {
             $session->delete('is_search');
             $session->delete('filter');
     
@@ -127,8 +134,25 @@ class UsersController extends AppController
 
             $this->set('is_search', 1);
             $this->set('filter', $filter);
-        } else {
+        } elseif($this->Auth->user('user_type') == 'ADM') {
             $users = $this->getSupervisedUsers($this->Auth->user('user_id'));
+        }
+        // Tutores
+        if ($this->request->is('post') && $this->Auth->user('user_type') == 'TUT') {
+            $session->delete('is_search');
+            $session->delete('filter');
+    
+            $filter = $this->request->getData()['filter'];
+
+            $session->write('is_search', 1);
+            $session->write('filter', $filter);
+            
+            $users = $this->getSupervisedUsersByTutors($this->Auth->user('user_id'), $filter);
+
+            $this->set('is_search', 1);
+            $this->set('filter', $filter);
+        } elseif($this->Auth->user('user_type') == 'TUT') {
+            $users = $this->getSupervisedUsersByTutors($this->Auth->user('user_id'));
         }
 
 
@@ -146,6 +170,9 @@ class UsersController extends AppController
         $this->autoRender = false;
         $session = $this->getRequest()->getSession();
         $session->delete('is_search');
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
         $session->delete('filter');
         return $this->redirect(['action' => 'tutors']);
     }
@@ -159,7 +186,9 @@ class UsersController extends AppController
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
         // Búsqueda
-
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
         if ($this->request->is('post')) {
             $session->delete('is_search');
             $session->delete('filter');
@@ -278,6 +307,9 @@ class UsersController extends AppController
         // Set Session
         $session = $this->getRequest()->getSession();
         
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
         // Set Layout
         $this->viewBuilder()->setLayout('asdra-layout');
         // Set User
@@ -318,6 +350,9 @@ class UsersController extends AppController
         // Set Layout
         $this->viewBuilder()->setLayout('asdra-layout');
         
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
         // Get User
         $user = $this->Users->get($id);
         $tutors = $this->Users->find('all', ['conditions' => ['user_type' => 'TUT']])->all();
@@ -344,6 +379,10 @@ class UsersController extends AppController
         // Set Session
         $session = $this->getRequest()->getSession();
         
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
+
         // Set Layout
         $this->viewBuilder()->setLayout('asdra-layout');
         
@@ -361,6 +400,10 @@ class UsersController extends AppController
     {
         $this->autoRender = false;
         $user = $this->Users->get($id);
+
+        if ($this->Auth->user('user_type') !== 'ADM') {
+            return $this->redirect(['action' => 'initInCharge']);
+        }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
@@ -553,7 +596,6 @@ class UsersController extends AppController
 
         // Tiene un BUG
         $allUsers = $this->getSupervisedUsers($id, $filter);
-
         foreach ($allUsers as $person) {
             // Use a Placeholder, it's just an aux var
             $placeholder = $person; // Take $person values to the placeholder
@@ -618,6 +660,44 @@ class UsersController extends AppController
         return $users;
     }
 
+    private function getSupervisedUsersByTutors($id, $filter = null)
+    {
+        $filter = strtoupper($filter);
+        $usersTable = TableRegistry::get('users');
+
+        $users = $usersTable->find()
+            ->select([
+                'company' => "IFNULL(cmp.company_name, ' - ')",
+                'id' => 'users.user_id',
+                'name' => 'users.name',
+                'phone' => 'users.phone',
+                'photo' => 'users.photo'
+                ])
+            ->join([[
+                'table' => 'supervisors',
+                'alias' => 'sup',
+                'type' => 'INNER',
+                'conditions' => ["sup.person_id = users.user_id AND sup.rol = 'CHF'"]
+            ]])
+            ->join([[
+                'table' => 'companies',
+                'alias' => 'cmp',
+                'type' => 'LEFT OUTER',
+                'conditions' => ['cmp.company_id = sup.company_id']
+            ]]) 
+            ->where([
+                'AND' =>
+                    ['sup.supervisor_id' => $id],
+                    ['UPPER(users.name) LIKE' => '%'.$filter.'%']
+            ])
+            ->enableHydration(false)
+            ->toList();
+
+        return $users;
+    }
+
+
+
     private function getTutors($filter = null)
     {
         $filter = strtoupper($filter);
@@ -651,34 +731,50 @@ class UsersController extends AppController
 
         $query = 
                 "SELECT 
-                    COUNT(tsk.task_id) pendingTasks,
-                    max(tlg.end_date) lastTask,
-                    grp.title,
-                    gus.repetition,
-                    gus.rep_days repDays,
-                    gus.start_time startTimeConf,
-                    gus.end_time endTimeConf,
-                    CAST(now() as time) now
+                SUM(pending) pendingTasks,
+                max(lastTask) lastTask,
+                title,
+                repetition,
+                repDays,
+                startTimeConf,
+                endTimeConf,
+                CAST(now() as time) as 'now'
+                FROM (
+                    SELECT 
+                        tsk.task_id Task,
+                        max(tlg.end_date) lastTask,
+                        grp.title,
+                        gus.repetition,
+                        gus.rep_days repDays,
+                        gus.start_time startTimeConf,
+                        gus.end_time endTimeConf,
+                        MAX(IF(isnull(tlg.task_id), 1, 0)
+                ) AS pending
                 FROM
                     users per
                         INNER JOIN
                     group_users gus ON per.user_id = gus.user_id
                         INNER JOIN
                     groups grp ON gus.group_id = grp.group_id
-                        LEFT OUTER JOIN
+                        INNER JOIN
                     tasks tsk ON grp.group_id = tsk.group_id
-                        LEFT OUTER JOIN
-                    task_log tlg ON (tsk.task_id = tlg.task_id
-                        AND date_format(tlg.start_date, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d'))
+                        INNER JOIN
+                    steps stp ON stp.task_id = tsk.task_id
+                        LEFT JOIN
+                    task_log tlg ON (tsk.task_id = tlg.task_id AND stp.step_id = tlg.step_id
+                                     AND date_format(tlg.end_date, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d') 
+                                     AND tlg.user_id = 2)
                 WHERE
                     ( gus.rep_days = 'TODOS'
                       OR (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now()) + 1,'LU','MA','MI','JU','VI','SA','DO'),'%') and gus.repetition in ('DIA','SEM'))
                       OR (gus.repetition = 'MES' and  DAY(now()) = DAY(gus.date_from))
                      )
                      AND per.user_id = :id
-                     AND gus.end_time < CAST(now() as time)
-                GROUP BY grp.title , gus.repetition , gus.rep_days , gus.start_time , gus.end_time
-                HAVING COUNT(grp.group_id) > 0";
+                     AND CAST(now() AS TIME) BETWEEN gus.start_time AND gus.end_time
+                     AND DATE_FORMAT(now(), '%Y-%m-%d') between gus.date_from AND IFnull(gus.date_to, now())
+                GROUP BY grp.title , gus.repetition , gus.rep_days , gus.start_time , gus.end_time, tsk.task_id
+                HAVING COUNT(grp.group_id) > 0) as temp
+                GROUP BY temp.title, temp.repetition, temp.repDays, temp.startTimeConf, temp.endTimeConf";
 
         $statement = $connection->execute($query,
             [

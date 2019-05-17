@@ -22,6 +22,10 @@ class CompaniesController extends AppController
     {
         $this->autoRender = false;
         $session = $this->getRequest()->getSession();
+        // Según usuario
+        if ($userProfileCode == 'TUT') {
+            return $this->redirect(['action' => 'initInCharge']);            
+        }
         $session->delete('is_search');
         $session->delete('filter');
         return $this->redirect(['action' => 'index']);

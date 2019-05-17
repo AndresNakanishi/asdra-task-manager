@@ -30,7 +30,6 @@
 			                    'class' => 'control-label',
 			                    'text' => 'Descripción:',
 			                ],
-			                'required',
 			                'placeholder' => 'Descripción',
 			                'autocomplete' => 'off'
 			            ]) ?>

@@ -34,9 +34,11 @@ $this->assign('title', $title);?>
                                 <?php endforeach ?>
                             <?php endif ?>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <a href="<?php echo $this->Url->build('/', true) ?>person/add" class="btn btn-primary border-dark"><i class="fas fa-plus-circle"></i> Agregar Persona</a>
-                        </div>
+                        <?php if ($userProfileCode == 'ADM'): ?>
+                            <div class="d-flex justify-content-end">
+                                <a href="<?php echo $this->Url->build('/', true) ?>person/add" class="btn btn-primary border-dark"><i class="fas fa-plus-circle"></i> Agregar Persona</a>
+                            </div>
+                        <?php endif ?>
                     </div>
                 </div>
             </div>

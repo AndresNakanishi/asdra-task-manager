@@ -9,6 +9,7 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
              <ul class="navbar-nav d-flex align-items-center ml-auto">
+                    <?php if ($userProfileCode == 'ADM'): ?>
                     <li class="nav-item active">
                         <a class="nav-link" href="<?= $this->Url->build('/', true) ?>init-dashboard">Inicio</a>
                     </li>
@@ -17,18 +18,35 @@
                             Configuración
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="configDropdown">
+                                
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>init-in-charge">Personas a Cargo</a>
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>users/init-tutors">Tutores</a>
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>companies/init-comp">Compañias</a>
                             <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>groups">Grupo de Tareas</a>
                         </div>
                     </li>
+                    <?php else: ?>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="<?= $this->Url->build('/', true) ?>init-in-charge">Inicio</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="configDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Configuración
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="configDropdown">
+                                
+                            <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>init-in-charge">Personas a Cargo</a>
+                            <a class="dropdown-item" href="<?= $this->Url->build('/', true) ?>groups">Grupo de Tareas</a>
+                        </div>
+                    </li>
+                    <?php endif ?>
                     <li class="nav-item mr-5">
                         <a class="nav-link" href="<?= $this->Url->build('/', true) ?>logout">Salir</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= $this->Url->build('/', true) ?>myprofile/<?= $authUser->user_id ?>">
-                            <img class="user-image rounded-circle" src="<?= $authUser->photo ?>" alt="<?= $authUser->user ?>">
+                            <img class="user-image rounded-circle d-none d-lg-block" src="<?= $authUser->photo ?>" alt="<?= $authUser->user ?>">
+                            <p class="d-md-none">Mi perfil</p>                        
                         </a>
                     </li>
                 </ul>

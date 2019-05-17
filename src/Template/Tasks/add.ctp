@@ -26,7 +26,6 @@
 			                    'class' => 'control-label',
 			                    'text' => 'Descripción 2:',
 			                ],
-			                'required',
 			                'placeholder' => 'Descripción 2',
 			                'autocomplete' => 'off'
 			            ]) ?>

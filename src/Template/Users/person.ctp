@@ -142,7 +142,7 @@
                             ['style' => 'padding-right: 10px;', 'class' => 'btn btn-info border-dark mr-3']
                         ) ?>   
                         <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Volver</a>    
-                        <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Confirmar Cambios">    
+                        <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Editar">    
                     </div>
                 </div>
             </div>
