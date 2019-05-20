@@ -56,7 +56,7 @@ class GroupsController extends AppController
             $data = $this->request->getData();
 
             if ($data['image'] == '') {
-                $data['image'] = null;
+                $data['image'] = ' ';
                 unset($data['avatar_code']);
             } else {
                 // Image            
@@ -100,7 +100,7 @@ class GroupsController extends AppController
             $data = $this->request->getData();
             
             if ($data['image'] == '') {
-                $data['image'] = null;
+                unset($data['image']);
                 unset($data['avatar_code']);
             } else {
                 // Image            
