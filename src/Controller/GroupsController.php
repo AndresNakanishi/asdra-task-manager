@@ -137,12 +137,20 @@ class GroupsController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $group = $this->Groups->get($id);
 
-        if ($this->Groups->delete($group)) {
+        $group = $this->Groups->get($id);
+        $deleted = false;
+
+        try {
+            $deleted = $this->Groups->delete($group);
+        } catch(\Exception $e) {
+            
+        }
+
+        if ($deleted) {
             $this->Flash->success(__('<b>El Grupo de tareas ha sido borrado!</b>'));
         } else {
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            $this->Flash->warning(__('<b>Por Seguridad:</b> Para poder borrar un grupo de tareas, debe <b>primero borrar sus tareas y pasos.</b>'));
         }
 
         return $this->redirect(['action' => 'index']);

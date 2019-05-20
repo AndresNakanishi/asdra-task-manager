@@ -99,11 +99,20 @@ class TasksController extends AppController
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
+
         $task = $this->Tasks->get($id);
-        if ($this->Tasks->delete($task)) {
-            $this->Flash->success(__('<b>La tarea fue eliminada correctamente!</b>'));
+        $deleted = false;
+
+        try {
+            $deleted = $this->Tasks->delete($task);
+        } catch(\Exception $e) {
+            
+        }
+
+        if ($deleted) {
+            $this->Flash->success(__('<b>La tareas ha sido borrado!</b>'));
         } else {
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+            $this->Flash->warning(__('<b>Por Seguridad:</b> Para poder borrar una tarea, debe <b>primero borrar sus pasos.</b>'));
         }
 
         return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group_id]);

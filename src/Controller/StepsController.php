@@ -138,12 +138,20 @@ class StepsController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $step = $this->Steps->get($id);
-        if ($this->Steps->delete($step)) {
-            $this->Flash->success(__('<b>El paso fue eliminado correctamente!</b>'));
-        } else {
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+        $deleted = false;
+        
+        try {
+            $this->Steps->delete($step);
+        } catch(\Exception $e) {
+            
         }
 
+        if ($deleted) {
+            $this->Flash->success(__('<b>El paso ha sido borrado!</b>'));
+        } else {
+            $this->Flash->warning(__('<b>Este paso tiene opciones!</b> Para poder borrar el paso, debe <b>primero borrar sus opciones!.</b>'));
+        }
+        
         return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
     }
 
