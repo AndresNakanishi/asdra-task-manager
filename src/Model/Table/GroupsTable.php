@@ -33,6 +33,10 @@ class GroupsTable extends Table
         $this->setTable('groups');
         $this->setDisplayField('title');
         $this->setPrimaryKey('group_id');
+
+        $this->belongsTo('Companies', [
+            'foreignKey' => 'company_id'
+        ]);
     }
 
     /**
@@ -65,5 +69,19 @@ class GroupsTable extends Table
             ->allowEmptyFile('image', false);
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['company_id'], 'Companies'));
+
+        return $rules;
     }
 }

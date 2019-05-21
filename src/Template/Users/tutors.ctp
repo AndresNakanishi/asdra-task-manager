@@ -1,4 +1,4 @@
-<?php $title = 'Tutores';
+<?php $title = 'Apoyo Profesional';
 $this->assign('title', $title);?>
 
 <div class="row mt-3">
@@ -7,7 +7,7 @@ $this->assign('title', $title);?>
                 <div class="card">
                     <div class="card-body">
                         <div class="usersContainerHeader">
-                            <h3 class="usersContainerHeaderTitle">Tutores</h3>
+                            <h3 class="usersContainerHeaderTitle"><?= $title ?></h3>
                             <?= $this->Form->create(null, ['class' => 'form-inline', 'url' => ['action' => 'tutors']]) ?>
                             <?php if (isset($filter)): ?>
                                 <input type="search" class="form-control usersContainerSearch" id="search-input" name="filter" placeholder="Buscar..." autocomplete="off" value="<?= $filter ?>" style="position: relative; vertical-align: top;">

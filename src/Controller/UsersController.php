@@ -70,7 +70,7 @@ class UsersController extends AppController
         $this->viewBuilder()->setLayout('asdra-layout');
         $this->set('is_search', 0);
         
-        // SEgún
+        // Según
         if ($this->Auth->user('user_type') !== 'ADM') {
             return $this->redirect(['action' => 'initInCharge']);
         }

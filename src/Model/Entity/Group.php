@@ -25,6 +25,8 @@ class Group extends Entity
     protected $_accessible = [
         'title' => true,
         'description' => true,
-        'image' => true
+        'image' => true,
+        'company_id' => true,
+        'company' => true
     ];
 }

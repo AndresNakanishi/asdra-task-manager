@@ -7,7 +7,7 @@
             },
             stateSave: true,
             "columnDefs": [
-                {"orderable": false, "targets": 2},
+                {"orderable": false, "targets": 3},
             ],
         });
     });
@@ -28,6 +28,7 @@
                 <table id="datatable" class="table">
                     <thead>
                         <tr>
+                            <th>Compañía</th>
                             <th>Título</th>
                             <th>Descripción</th>
                             <th></th>
@@ -36,6 +37,7 @@
                     <tbody>
                         <?php foreach ($groups as $group): ?>
                         <tr>
+                            <td><?= $group->company->company_name ?></td>
                             <td><?= $group->title ?></td>
                             <td><?= $group->description ?></td>
                             <td>

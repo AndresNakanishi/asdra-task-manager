@@ -5,35 +5,43 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-	            <h3><b>Agregar Grupo de Tareas</b></h3>
+              <h3><b>Agregar Grupo de Tareas</b></h3>
             </div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">	
-		        <?= $this->Form->create($group, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">  
+            <?= $this->Form->create($group, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
               <input type="text" id="avatar-code" name="avatar-code" style="display: none">
               <input type="text" id="image" name="image" style="display: none">
-			        <div class="form-group">
-			            <?= $this->Form->control('title', [
-			                'class' => 'form-control',
-			                'label' => [
-			                    'class' => 'control-label',
-			                    'text' => 'Título del Grupo de Tareas:',
-			                ],
-			                'required',
-			                'placeholder' => 'Título',
-			                'autocomplete' => 'off'
-			            ]) ?>
-			        </div>
-			        <div class="form-group">
-			            <?= $this->Form->control('description', [
-			                'class' => 'form-control',
-			                'label' => [
-			                    'class' => 'control-label',
-			                    'text' => 'Descripción:',
-			                ],
-			                'placeholder' => 'Descripción',
-			                'autocomplete' => 'off'
-			            ]) ?>
-			        </div>
+              <?php if ($userProfileCode == 'ADM'): ?>
+              <div class="form-group">
+                <label for="company_id">Compañía:</label>
+                <?= $this->Form->select('company_id', $companies, ['default' => '', 'class' => 'form-control group_id_select']);?>
+              </div>
+              <?php else: ?>
+                <input type="hidden" name="company_id" value="<?= $authUser->company_id ?>">
+              <?php endif ?>
+              <div class="form-group">
+                  <?= $this->Form->control('title', [
+                      'class' => 'form-control',
+                      'label' => [
+                          'class' => 'control-label',
+                          'text' => 'Título del Grupo de Tareas:',
+                      ],
+                      'required',
+                      'placeholder' => 'Título',
+                      'autocomplete' => 'off'
+                  ]) ?>
+              </div>
+              <div class="form-group">
+                  <?= $this->Form->control('description', [
+                      'class' => 'form-control',
+                      'label' => [
+                          'class' => 'control-label',
+                          'text' => 'Descripción:',
+                      ],
+                      'placeholder' => 'Descripción',
+                      'autocomplete' => 'off'
+                  ]) ?>
+              </div>
 		        <?= $this->Form->end() ?>
 				<div class="row">
 					<div class="col-lg-12" style="margin-top: 30px" id="avatar-div">
@@ -77,6 +85,10 @@
     </div>
 </div>
 <script>
+  // Select 2
+    $(document).ready(function() {
+      $('.group_id_select').select2();
+    });
     // Image Uploader con resize
 
     $("#edit-image").click(function(e){
