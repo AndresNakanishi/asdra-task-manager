@@ -9,7 +9,10 @@ use Cake\ORM\Entity;
  * @property int $group_id
  * @property string $title
  * @property string|null $description
- * @property string $image
+ * @property string|null $image
+ * @property int|null $company_id
+ *
+ * @property \App\Model\Entity\Company $company
  */
 class Group extends Entity
 {

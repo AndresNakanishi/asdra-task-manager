@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * Groups Model
  *
+ * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
+ *
  * @method \App\Model\Entity\Group get($primaryKey, $options = [])
  * @method \App\Model\Entity\Group newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Group[] newEntities(array $data, array $options = [])
@@ -65,8 +67,7 @@ class GroupsTable extends Table
         $validator
             ->scalar('image')
             ->maxLength('image', 500)
-            ->requirePresence('image', 'create')
-            ->allowEmptyFile('image', false);
+            ->allowEmptyFile('image');
 
         return $validator;
     }
