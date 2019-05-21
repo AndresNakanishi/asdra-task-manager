@@ -30,6 +30,8 @@ class GroupUsersController extends AppController
 
     public function edit($user_id = null, $group_id = null)
     {
+        $session = $this->getRequest()->getSession();
+     
         $this->viewBuilder()->setLayout('asdra-layout');
 
         $groupUser = $this->GroupUsers->find('all', ['conditions' => ['group_id' => $group_id, 'user_id' => $user_id]])->first();
@@ -68,6 +70,8 @@ class GroupUsersController extends AppController
      */
     public function add($user_id = null, $group_type = null)
     {
+        $session = $this->getRequest()->getSession();
+     
         $this->viewBuilder()->setLayout('asdra-layout');
 
         $groupUser = $this->GroupUsers->newEntity();
@@ -135,7 +139,16 @@ class GroupUsersController extends AppController
                 $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>. O esta tarea, ya fue asignada y comienza el mismo día.'));    
             }
         }
-        $groups = TableRegistry::get('groups')->find('list');
+
+
+        $asdra = TableRegistry::get('companies')->find('all', ['conditions' => ['company_name' => 'ASDRA']])->first();
+        
+        if ($asdra->company_id == $this->Auth->user('company_id')) {
+            $groups = TableRegistry::get('groups')->find('list');
+        } else {
+            $groups = TableRegistry::get('groups')->find('list', ['conditions' => ['Groups.company_id' => $this->Auth->user('company_id')]]);
+        }
+        
         $this->set(compact('groupUser', 'groups'));
     }
 
