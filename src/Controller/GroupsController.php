@@ -31,7 +31,7 @@ class GroupsController extends AppController
         } else {
             $groups = $this->Groups->find('all', ['contain' => ['Companies']])
             ->where([
-                'groups.company_id' => $this->Auth->user('company_id')
+                'Groups.company_id' => $this->Auth->user('company_id')
             ])
             ->all();
         }
