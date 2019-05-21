@@ -729,6 +729,8 @@ class UsersController extends AppController
     {
         $connection = ConnectionManager::get('default');
 
+        $now = date('Y-m-d H:i:s');
+
         $query = 
                 "SELECT 
                 SUM(pending) pendingTasks,
@@ -738,7 +740,7 @@ class UsersController extends AppController
                 repDays,
                 startTimeConf,
                 endTimeConf,
-                CAST(now() as time) as 'now'
+                CAST('$now' as time) as 'now'
                 FROM (
                     SELECT 
                         tsk.task_id Task,
@@ -762,16 +764,16 @@ class UsersController extends AppController
                     steps stp ON stp.task_id = tsk.task_id
                         LEFT JOIN
                     task_log tlg ON (tsk.task_id = tlg.task_id AND stp.step_id = tlg.step_id
-                                     AND date_format(tlg.end_date, '%Y-%m-%d') = date_format(now(), '%Y-%m-%d') 
+                                     AND date_format(tlg.end_date, '%Y-%m-%d') = date_format('$now', '%Y-%m-%d') 
                                      AND tlg.user_id = 2)
                 WHERE
                     ( gus.rep_days = 'TODOS'
-                      OR (gus.rep_days LIKE concat('%',ELT(WEEKDAY(now()) + 1,'LU','MA','MI','JU','VI','SA','DO'),'%') and gus.repetition in ('DIA','SEM'))
-                      OR (gus.repetition = 'MES' and  DAY(now()) = DAY(gus.date_from))
+                      OR (gus.rep_days LIKE concat('%',ELT(WEEKDAY('$now') + 1,'LU','MA','MI','JU','VI','SA','DO'),'%') and gus.repetition in ('DIA','SEM'))
+                      OR (gus.repetition = 'MES' and  DAY('$now') = DAY(gus.date_from))
                      )
                      AND per.user_id = :id
-                     AND CAST(now() AS TIME) BETWEEN gus.start_time AND gus.end_time
-                     AND DATE_FORMAT(now(), '%Y-%m-%d') between gus.date_from AND IFnull(gus.date_to, now())
+                     AND CAST('$now' AS TIME) BETWEEN gus.start_time AND gus.end_time
+                     AND DATE_FORMAT('$now', '%Y-%m-%d') between gus.date_from AND IFnull(gus.date_to, '$now')
                 GROUP BY grp.title , gus.repetition , gus.rep_days , gus.start_time , gus.end_time, tsk.task_id
                 HAVING COUNT(grp.group_id) > 0) as temp
                 GROUP BY temp.title, temp.repetition, temp.repDays, temp.startTimeConf, temp.endTimeConf";
