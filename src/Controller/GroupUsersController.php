@@ -143,6 +143,8 @@ class GroupUsersController extends AppController
 
         $asdra = TableRegistry::get('companies')->find('all', ['conditions' => ['company_name' => 'ASDRA']])->first();
         
+        $groups = null;
+
         if ($asdra->company_id == $this->Auth->user('company_id')) {
             $groups = TableRegistry::get('groups')->find('list');
         } else {
