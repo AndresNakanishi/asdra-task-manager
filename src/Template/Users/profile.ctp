@@ -58,7 +58,7 @@
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="d-flex">
                         <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Cancelar</a>    
-                        <input form="form" id="accept-button" type="submit" class="btn btn-success border-dark" value="Confirmar Cambios">    
+                        <input form="form" id="accept-button" type="submit" class="btn btn-success border-dark" value="Guardar">    
                     </div>
                 </div>
             </div>

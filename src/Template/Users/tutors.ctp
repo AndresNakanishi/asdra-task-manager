@@ -1,4 +1,4 @@
-<?php $title = 'Apoyo Profesional';
+<?php $title = 'Tutores';
 $this->assign('title', $title);?>
 
 <div class="row mt-3">
