@@ -98,8 +98,8 @@ class GroupUsersController extends AppController
             } else {
                 $data['end_date'] = null;
             }
-            // Date
-            if ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) ) ) {
+
+            if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($data['user_id'], $data['group_id'] , $data['start_date']) ) {
                 try {
                     $supTable = TableRegistry::get('group_users');
                     $insert = $supTable->query();
@@ -132,7 +132,7 @@ class GroupUsersController extends AppController
                     $this->Flash->error(__('Oh no! Hubo un error. Intente más tarde.'));
                 }
             } else {
-                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>.'));    
+                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>. O esta tarea, ya fue asignada y comienza el mismo día.'));    
             }
         }
         $groups = TableRegistry::get('groups')->find('list');
@@ -179,5 +179,22 @@ class GroupUsersController extends AppController
         }
 
         return $response;
+    }
+
+    // True if available
+    // False if not available
+    private function checkIfAvailable($group_id, $user_id, $start_date)
+    {
+        $available = $this->GroupUsers->find('all')->where([
+                        'group_id' => $group_id,
+                        'user_id' => $user_id,
+                        'date_from' => $start_date  
+                    ])->first();
+
+        if ($available->user_id) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
