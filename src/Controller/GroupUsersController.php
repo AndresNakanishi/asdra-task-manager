@@ -148,7 +148,7 @@ class GroupUsersController extends AppController
         if ($asdra->company_id == $this->Auth->user('company_id')) {
             $groups = TableRegistry::get('groups')->find('list');
         } else {
-            $groups = TableRegistry::get('groups')->find('list', ['conditions' => ['Groups.company_id' => $this->Auth->user('company_id')]]);
+            $groups = TableRegistry::get('groups')->find('list')->where(['company_id' => $this->Auth->user('company_id')]);
         }
         
         $this->set(compact('groupUser', 'groups','user_id'));
