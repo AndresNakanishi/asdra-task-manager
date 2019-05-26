@@ -95,7 +95,7 @@ $days = [
                 	'class' => 'btn btn-primary border-dark mr-3',
                 	'form' => 'addForm'
             	]) ?>
-				<a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark">Cancelar</a>  
+				<a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user_id ?>" class="btn btn-danger border-dark">Cancelar</a>  
             </div>
         </div>
     </div>

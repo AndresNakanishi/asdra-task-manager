@@ -61,7 +61,7 @@ class GroupUsersController extends AppController
             return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
         }
 
-        $this->set(compact('groupUser','selected'));
+        $this->set(compact('groupUser','selected','user_id'));
     }
     /**
      * Add method
@@ -151,7 +151,7 @@ class GroupUsersController extends AppController
             $groups = TableRegistry::get('groups')->find('list', ['conditions' => ['Groups.company_id' => $this->Auth->user('company_id')]]);
         }
         
-        $this->set(compact('groupUser', 'groups'));
+        $this->set(compact('groupUser', 'groups','user_id'));
     }
 
     /**

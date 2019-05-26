@@ -174,7 +174,7 @@
         onSelect: selectcanvas,
         boxWidth: (document.getElementById("div-img-form").clientWidth)-40,
         boxHeight: crop_max_height,
-        aspectRatio: 1/1,
+        aspectRatio: 2.6/1,
         setSelect: [canvas.width/4, canvas.height/4, canvas.width/4+canvas.width/2, canvas.height/4+canvas.height/2]
       }, function() {
         jcrop_api = this;

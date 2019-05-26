@@ -1,4 +1,12 @@
-<?php $this->assign('title', 'Nuevo Paso');?>
+<?php $this->assign('title', 'Nuevo Paso');
+
+$ext = [
+  '' => 'Seleccione el Tipo de Imagen',
+  'png' => 'Imágen',
+  'gif' => 'GIF'
+];
+
+?>
 <?= $this->Html->css(['/plugins/jcrop/jquery.Jcrop.min']) ?>
 <?= $this->Html->script(['/plugins/jcrop/jquery.Jcrop.min']) ?>
 <div class="row mt-3">
@@ -10,7 +18,8 @@
             <div class="card-body d-flex flex-column align-items-center justify-content-center">	
 		        <?= $this->Form->create($step, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
 			        <input type="text" id="avatar-code" name="avatar-code" style="display: none">
-					<input type="text" id="photo" name="photo" style="display: none">
+    					<input type="text" id="photo" name="photo" style="display: none">             
+              <input type="file" id="gif_input" name="gif" style="display: none">
 			        <div class="form-group">
 			            <?= $this->Form->control('title', [
 			                'class' => 'form-control',
@@ -49,8 +58,26 @@
 			                'autocomplete' => 'off'
 			            ]) ?>
 			        </div>
+              <div class="form-group">
+                <label for="ext">Tipo de Imágen:</label>
+                <?= $this->Form->select('ext', $ext, ['id' => 'img-switch','class' => 'form-control']);?>
+              </div>
+              <div class="row" id="img-gif" style="display: none">
+                <div class="col-lg-12" style="margin-top: 30px" id="avatar-div">
+                    <div class="row text-center d-flex flex-column justify-content-center align-items-center">
+                        <div class="col-lg-12" style="overflow: hidden;">
+                            <!-- Foto -->
+                            <label class="btn btn-primary" for="gif_input">
+                              Seleccionar imagen
+                            </label>
+                            <br>
+                            <p class="m-b-10">Tamaño maximo de imagen: 3 MB.</p>
+                        </div>
+                    </div>
+                </div>
+              </div>
 		        <?= $this->Form->end() ?>
-              <div class="row">
+              <div class="row" id="img-image" style="display: none">
                 <div class="col-lg-12" style="margin-top: 30px" id="avatar-div">
                     <div class="row text-center d-flex flex-column justify-content-center align-items-center" id="div-img-form">
                         <div class="col-lg-12" style="overflow: hidden;">
@@ -92,6 +119,53 @@
     </div>
 </div>
 <script>
+    let $switch = document.querySelector("#img-switch");
+    let $img = document.querySelector("#img-image");
+    let $gif = document.querySelector("#img-gif");
+    let index = document.querySelector("#img-switch").selectedIndex; 
+    let value = document.querySelector("#img-switch").options.item(index).text;
+    let gif_input = document.querySelector("#gif_input");
+    checkstatus(value);
+
+    $switch.addEventListener("change", () => {
+        index = document.querySelector("#img-switch").selectedIndex; 
+        value = document.querySelector("#img-switch").options.item(index).text;
+        checkstatus(value);
+    });
+
+    gif_input.addEventListener("change", () => {
+          $.notify({
+            message: "GIF Cargado"
+          },{
+            allow_dismiss: true,
+            type: 'primary',
+            animate: {
+              enter: 'animated fadeInDown',
+              exit: 'animated fadeOutUp'
+            },
+            placement: {
+              from: 'top',
+              align: 'center'
+            }
+          });
+    });
+
+    function checkstatus(value){
+        switch(value) {
+            case 'Imágen':
+                $img.style.display = 'block';
+                $gif.style.display = 'none';
+                break;
+            case 'GIF':
+                $img.style.display = 'none';
+                $gif.style.display = 'block';
+                break;
+            default:
+                $img.style.display = 'none';
+                $gif.style.display = 'none';
+        }
+    }
+    
     // Image Uploader con resize
 
     $("#edit-image").click(function(e){
