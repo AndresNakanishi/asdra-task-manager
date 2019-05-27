@@ -57,10 +57,16 @@ class StepsController extends AppController
             $data = $this->request->getData();
             $data['required'] = 1;
             $data['task_id'] = $id;
-            if ($data['photo'] == '') {
+            if ($data['photo'] == '' && $data['gif']['tmp_name'] == '') {
                 $data['photo'] = null;
+                unset($data['gif']);
                 unset($data['avatar_code']);
+            } elseif($data['photo'] == '' && $data['gif']['tmp_name'] !== ''){
+                unset($data['avatar_code']);
+                $data['photo'] = $this->setGif($data['gif']);
+                unset($data['gif']);
             } else {
+                unset($data['gif']);
                 // Image            
                 $img = $this->request->data('avatar-code');
                 $img = str_replace('data:image/png;base64,', '', $img);
@@ -70,8 +76,7 @@ class StepsController extends AppController
                 // Set Photo
                 $data['photo'] = $this->setAvatar($data['photo'], $data['title'], $fileData);
                 // Image
-            }
-            $data['title'] = strtoupper($data['title']);
+            }            $data['title'] = strtoupper($data['title']);
             $data['sub_title'] = strtoupper($data['sub_title']);
             $step = $this->Steps->patchEntity($step, $data);
             if ($this->Steps->save($step)) {
@@ -94,16 +99,20 @@ class StepsController extends AppController
     public function edit($id = null)
     {
         $this->viewBuilder()->setLayout('asdra-layout');
-        $step = $this->Steps->get($id, [
-            'contain' => []
-        ]);
+        $step = $this->Steps->get($id);
         $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $step->task_id]])->count();
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
-            if ($data['photo'] == '') {
-                $data['photo'] = null;
+            if ($data['photo'] == '' && $data['gif']['tmp_name'] == '') {
+                unset($data['photo']);
+                unset($data['gif']);
                 unset($data['avatar_code']);
+            } elseif($data['photo'] == '' && $data['gif']['tmp_name'] !== ''){
+                unset($data['avatar_code']);
+                $data['photo'] = $this->setGif($data['gif']);
+                unset($data['gif']);
             } else {
+                unset($data['gif']);
                 // Image            
                 $img = $this->request->data('avatar-code');
                 $img = str_replace('data:image/png;base64,', '', $img);
@@ -155,7 +164,7 @@ class StepsController extends AppController
         return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
     }
 
-      // Set or Update User Photo / Avatar
+    // Set or Update User Photo / Avatar
     // Author: Ricardo Andrés Nakanishi || Last Update: 10/04/2019
     private function setAvatar($avatar, $name, $img){
         $url = WWW_ROOT;
@@ -191,6 +200,39 @@ class StepsController extends AppController
             // Entire URL or Half
             $newAvatar = APP_URL. $imgFolder . $fileName;
         }
+        return $newAvatar;
+    }
+
+
+    private function setGIF($avatar){
+        $url = WWW_ROOT;
+        // Use a HASH with SHA1 to save our img
+        $hash = sha1($avatar['tmp_name']);
+        // We'll save our users img in this folder
+        $imgFolder = "img/steps/";
+        // Link that we are going to save
+        $folder = $url . $imgFolder;
+        // Out FileName
+        $fileName = "$hash.gif";
+        // Temporal File
+        $fileTmp = $avatar["tmp_name"];
+        // Entire URL
+        $fileDest = $folder . $fileName;
+
+        
+        if (!is_dir($folder)) {
+            mkdir($folder, 0777, true);
+        }
+
+        if (file_exists($fileDest)) {   
+            unlink($fileDest);
+            $success = move_uploaded_file($fileTmp, $fileDest);                         
+        } else {
+            $success = move_uploaded_file($fileTmp, $fileDest);                         
+        }
+
+        $newAvatar = APP_URL . $imgFolder . $fileName;
+    
         return $newAvatar;
     }
 }

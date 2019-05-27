@@ -14,12 +14,21 @@
                         <?= $this->Form->create($user, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-start', 'url' => ['controller' => 'Users', 'action' => 'edit', $user->user_id]]) ?>
                             <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                             <input type="text" id="photo" name="photo" style="display: none">                            
-                            <!-- Nombre Completo -->
-                            <input class="col-lg-8 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
-                            <!-- Teléfono -->
-                            <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
-                            <!-- Dirección -->
-                            <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                            <?php if ($userProfileCode == 'ADM'): ?>
+                                <!-- Nombre Completo -->
+                                <input class="col-lg-8 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
+                                <!-- Teléfono -->
+                                <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                                <!-- Dirección -->
+                                <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                            <?php else: ?>
+                                <!-- Nombre Completo -->
+                                <input class="col-lg-8 form-control" disabled="true" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
+                                <!-- Teléfono -->
+                                <input class="col-lg-4 form-control" disabled="true" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                                <!-- Dirección -->
+                                <input class="col-lg-12 form-control mt-3" disabled="true" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                            <?php endif ?>
                         <?= $this->Form->end() ?>
                             <div class="row mb-3 mt-3">
                                 <div class="col-lg-12">
@@ -36,12 +45,18 @@
                                                     <td><?= $super['name'] ?></td>
                                                     <td><?= $super['phone'] ?></td>
                                                     <?php if ($super['role'] == 'TUT'): ?>
-                                                        <td><?= $super['role'] ?></td>
+                                                        <td>Apoyo Profesional</td>
+                                                    <?php elseif($super['role'] == 'CHF'): ?>
+                                                        <td>Apoyo Natural</td>
+                                                    <?php else: ?>
+                                                        <td>Familiar</td>
+                                                    <?php endif ?>
+                                                    <?php if ($super['role'] == 'TUT'): ?>
                                                         <td>                    
                                                         </td>
                                                     <?php else: ?>
-                                                        <td><?= $super['role'] ?></td>
-                                                        <td>                    
+                                                        <td>
+                                                            <?php if ($userProfileCode == 'ADM'): ?>         
                                                             <?= $this->Form->postLink(
                                                                 'Eliminar', 
                                                                 ['action' => 'deleteRelationUserTutor', $super['id'], $user->user_id], 
@@ -50,6 +65,7 @@
                                                                     'class' => 'btn btn-sm btn-danger border-dark'
                                                                 ]
                                                             ) ?>  
+                                                            <?php endif ?>                     
                                                         </td>
                                                     <?php endif ?>
                                                 </tr>
@@ -64,9 +80,11 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <?php if ($userProfileCode == 'ADM'): ?>
                             <div class="row">
                                 <a href="<?= $this->Url->build('/', true) ?>users/assign-tutor/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
                             </div>
+                            <?php endif ?>
                             <div class="profileContainerTasks mt-3">
                                 <h6>Tipos de Tareas Asignadas</h6>
                                 <div class="profileContainerTasks-tasks">
@@ -77,6 +95,7 @@
                                         </div>
                                         <p class="mt-3">En el trabajo</p>
                                     </a>
+                                    <?php if ($userProfileCode == 'ADM'): ?>
                                     <!-- Group Type 2  ==> Tareas de la casa -->
                                     <a href="<?= $this->Url->build('/', true) ?>group-users/view/<?= $user->user_id?>/2" class="task text-center">
                                         <div class="icon rounded-circle">
@@ -84,16 +103,14 @@
                                         </div>
                                         <p class="mt-3">En casa</p>
                                     </a>
+                                    <?php endif ?>
                                 </div>
                             </div>
                         </div>
                         <!-- Imagen -->
                         <div class="d-flex flex-column align-items-center text-center">
-                            <?php if (strlen($user['photo']) > 80): ?>
-                                  <img class="rounded-circle" height="200" width="200" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
-                            <?php else: ?>
-                                <img class="rounded-circle" height="200" width="200" src="<?= $this->Url->build('/', true) ?><?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
-                            <?php endif ?> 
+                            <img class="rounded-circle" height="200" width="200" src="<?= $user['photo'] ?>" alt="<?= $user['name'] ?>">
+                            <?php if ($userProfileCode == 'ADM'): ?>
                             <!-- Foto -->
                             <div class="col-lg-8 text-center" style="margin-top: 30px" id="avatar-div">
                                 <div class="row text-center d-flex flex-column justify-content-center align-items-center" id="div-img-form">
@@ -122,28 +139,37 @@
                                     </div>
                                 </div>
                             </div>                       
-                        </div>    
+                            <?php endif ?> 
+                        </div>
                     </div>
                 </div>
                 <!-- Foto -->
                 <div class="d-flex justify-content-between align-items-center mt-3">
-                    <?= $this->Form->postLink(
-                        "¿Desea eliminar a $user->name de la base de datos?", 
-                        ['action' => 'delete', $user->user_id], 
-                        [
-                            'confirm' => __('¿Está seguro que eliminar a "{0}" de la base de datos?', $user->name),
-                            'class' => 'link'
-                        ]
-                    ) ?> 
+                    <?php if ($userProfileCode == 'ADM'): ?>
+                        <?= $this->Form->postLink(
+                            "¿Desea eliminar a $user->name de la base de datos?", 
+                            ['action' => 'delete', $user->user_id], 
+                            [
+                                'confirm' => __('¿Está seguro que eliminar a "{0}" de la base de datos?', $user->name),
+                                'class' => 'link'
+                            ]
+                        ) ?> 
+                    <?php endif ?>
+                    <?php if ($userProfileCode == 'ADM'): ?>
                     <div class="d-flex">
-                        <?= $this->Html->link(
-                            'Generar Código de Activación Nuevo', 
-                            ['action' => 'generateNewToken', $user->user_id], 
-                            ['style' => 'padding-right: 10px;', 'class' => 'btn btn-info border-dark mr-3']
-                        ) ?>   
-                        <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Volver</a>    
-                        <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Editar">    
+                            <?= $this->Html->link(
+                                'Generar Código de Activación Nuevo', 
+                                ['action' => 'generateNewToken', $user->user_id], 
+                                ['style' => 'padding-right: 10px;', 'class' => 'btn btn-info border-dark mr-3']
+                            ) ?>   
+                            <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Volver</a>    
+                            <input form="form" type="submit" id="accept-button" class="btn btn-success border-dark" value="Guardar">    
                     </div>
+                    <?php else: ?>
+                    <div class="d-flex justify-content-end col-lg-12">
+                        <a href="<?= $this->Url->build('/', true) ?>" class="btn btn-danger border-dark mr-3">Volver</a>    
+                    </div>
+                    <?php endif ?>
                 </div>
             </div>
         </div>

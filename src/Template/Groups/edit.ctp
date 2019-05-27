@@ -9,9 +9,17 @@
             </div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center">	
 		        <?= $this->Form->create($group, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
-                    <input type="text" id="avatar-code" name="avatar-code" style="display: none">
-                    <input type="text" id="image" name="image" style="display: none">
-			        <div class="form-group">
+              <input type="text" id="avatar-code" name="avatar-code" style="display: none">
+              <input type="text" id="image" name="image" style="display: none">
+              <?php if ($userProfileCode == 'ADM'): ?>
+              <div class="form-group">
+                <label for="company_id">Compañía:</label>
+                <?= $this->Form->select('company_id', $companies, ['default' => '', 'class' => 'form-control group_id_select']);?>
+              </div>
+              <?php else: ?>
+                <input type="hidden" name="company_id" value="<?= $authUser->company_id ?>">
+              <?php endif ?>
+              <div class="form-group">
 			            <?= $this->Form->control('title', [
 			                'class' => 'form-control',
 			                'label' => [
@@ -78,6 +86,10 @@
 </div>
 
 <script>
+    // Select 2
+    $(document).ready(function() {
+      $('.group_id_select').select2();
+    });
     // Image Uploader con resize
 
     $("#edit-image").click(function(e){
@@ -163,7 +175,7 @@
         onSelect: selectcanvas,
         boxWidth: (document.getElementById("div-img-form").clientWidth)-40,
         boxHeight: crop_max_height,
-        aspectRatio: 1/1,
+        aspectRatio: 2.6/1,
         setSelect: [canvas.width/4, canvas.height/4, canvas.width/4+canvas.width/2, canvas.height/4+canvas.height/2]
       }, function() {
         jcrop_api = this;

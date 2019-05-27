@@ -22,7 +22,7 @@
                     <select name="rol" class="col-lg-12 form-control" required>     
                         <option disabled value="" selected>Rol</option>
                         <option value="FAM">Familiar</option>
-                        <option value="CHF">Jefe</option>
+                        <option value="CHF">Apoyo Natural</option>
                     </select>                  
                 </div>
                 <div class="form-group">

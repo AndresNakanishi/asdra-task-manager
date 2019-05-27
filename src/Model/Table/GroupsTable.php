@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 /**
  * Groups Model
  *
+ * @property \App\Model\Table\CompaniesTable|\Cake\ORM\Association\BelongsTo $Companies
+ *
  * @method \App\Model\Entity\Group get($primaryKey, $options = [])
  * @method \App\Model\Entity\Group newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Group[] newEntities(array $data, array $options = [])
@@ -33,6 +35,10 @@ class GroupsTable extends Table
         $this->setTable('groups');
         $this->setDisplayField('title');
         $this->setPrimaryKey('group_id');
+
+        $this->belongsTo('Companies', [
+            'foreignKey' => 'company_id'
+        ]);
     }
 
     /**
@@ -61,9 +67,22 @@ class GroupsTable extends Table
         $validator
             ->scalar('image')
             ->maxLength('image', 500)
-            ->requirePresence('image', 'create')
-            ->allowEmptyFile('image', false);
+            ->allowEmptyFile('image');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['company_id'], 'Companies'));
+
+        return $rules;
     }
 }

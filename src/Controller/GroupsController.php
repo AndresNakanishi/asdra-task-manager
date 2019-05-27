@@ -20,8 +20,21 @@ class GroupsController extends AppController
      */
     public function index()
     {
+        $session = $this->getRequest()->getSession();
+        
         $this->viewBuilder()->setLayout('asdra-layout');
-        $groups = $this->paginate($this->Groups);
+
+        $asdra = TableRegistry::get('companies')->find('all', ['conditions' => ['company_name' => 'ASDRA']])->first();
+        
+        if ($asdra->company_id == $this->Auth->user('company_id')) {
+            $groups = $this->Groups->find('all', ['contain' => ['Companies']])->all();
+        } else {
+            $groups = $this->Groups->find('all', ['contain' => ['Companies']])
+            ->where([
+                'Groups.company_id' => $this->Auth->user('company_id')
+            ])
+            ->all();
+        }
 
         $this->set(compact('groups'));
     }
@@ -50,6 +63,7 @@ class GroupsController extends AppController
      */
     public function add()
     {
+        $session = $this->getRequest()->getSession();
         $this->viewBuilder()->setLayout('asdra-layout');
         $group = $this->Groups->newEntity();
         if ($this->request->is('post')) {
@@ -80,7 +94,8 @@ class GroupsController extends AppController
             }
             $this->Flash->error(__('Recuerde que es necesario cargar el <b>título</b> y la <b>imagen</b> como mínimo!'));
         }
-        $this->set(compact('group'));
+        $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
+        $this->set(compact('group','companies'));
     }
 
     /**
@@ -92,6 +107,7 @@ class GroupsController extends AppController
      */
     public function edit($id = null)
     {
+        $session = $this->getRequest()->getSession();
         $this->viewBuilder()->setLayout('asdra-layout');
         $group = $this->Groups->get($id, [
             'contain' => []
@@ -124,7 +140,8 @@ class GroupsController extends AppController
             }
             $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
-        $this->set(compact('group'));
+        $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
+        $this->set(compact('group','companies'));
     }
 
     /**

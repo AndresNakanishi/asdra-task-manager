@@ -30,6 +30,8 @@ class GroupUsersController extends AppController
 
     public function edit($user_id = null, $group_id = null)
     {
+        $session = $this->getRequest()->getSession();
+     
         $this->viewBuilder()->setLayout('asdra-layout');
 
         $groupUser = $this->GroupUsers->find('all', ['conditions' => ['group_id' => $group_id, 'user_id' => $user_id]])->first();
@@ -59,7 +61,7 @@ class GroupUsersController extends AppController
             return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
         }
 
-        $this->set(compact('groupUser','selected'));
+        $this->set(compact('groupUser','selected','user_id'));
     }
     /**
      * Add method
@@ -68,6 +70,8 @@ class GroupUsersController extends AppController
      */
     public function add($user_id = null, $group_type = null)
     {
+        $session = $this->getRequest()->getSession();
+     
         $this->viewBuilder()->setLayout('asdra-layout');
 
         $groupUser = $this->GroupUsers->newEntity();
@@ -98,8 +102,8 @@ class GroupUsersController extends AppController
             } else {
                 $data['end_date'] = null;
             }
-            // Date
-            if ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) ) ) {
+
+            if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($data['user_id'], $data['group_id'] , $data['start_date']) ) {
                 try {
                     $supTable = TableRegistry::get('group_users');
                     $insert = $supTable->query();
@@ -132,11 +136,22 @@ class GroupUsersController extends AppController
                     $this->Flash->error(__('Oh no! Hubo un error. Intente más tarde.'));
                 }
             } else {
-                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>.'));    
+                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>. O esta tarea, ya fue asignada y comienza el mismo día.'));    
             }
         }
-        $groups = TableRegistry::get('groups')->find('list');
-        $this->set(compact('groupUser', 'groups'));
+
+
+        $asdra = TableRegistry::get('companies')->find('all', ['conditions' => ['company_name' => 'ASDRA']])->first();
+        
+        $groups = null;
+
+        if ($asdra->company_id == $this->Auth->user('company_id')) {
+            $groups = TableRegistry::get('groups')->find('list');
+        } else {
+            $groups = TableRegistry::get('groups')->find('list')->where(['company_id' => $this->Auth->user('company_id')]);
+        }
+        
+        $this->set(compact('groupUser', 'groups','user_id'));
     }
 
     /**
@@ -179,5 +194,22 @@ class GroupUsersController extends AppController
         }
 
         return $response;
+    }
+
+    // True if available
+    // False if not available
+    private function checkIfAvailable($group_id, $user_id, $start_date)
+    {
+        $available = $this->GroupUsers->find('all')->where([
+                        'group_id' => $group_id,
+                        'user_id' => $user_id,
+                        'date_from' => $start_date  
+                    ])->first();
+
+        if ($available->user_id) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
