@@ -151,7 +151,7 @@ class GroupUsersController extends AppController
             $groups = TableRegistry::get('groups')->find('list')->where(['company_id' => $this->Auth->user('company_id')]);
         }
         
-        $this->set(compact('groupUser', 'groups','user_id'));
+        $this->set(compact('groupUser', 'groups','user_id','group_type'));
     }
 
     /**
