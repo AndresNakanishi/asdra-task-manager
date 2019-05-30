@@ -16,11 +16,11 @@
                             <input type="text" id="photo" name="photo" style="display: none">                            
                             <?php if ($userProfileCode == 'ADM'): ?>
                                 <!-- Nombre Completo -->
-                                <input class="col-lg-8 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
+                                <input class="col-lg-8 form-control" required name="name" maxlength="50" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
                                 <!-- Teléfono -->
-                                <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                                <input class="col-lg-4 form-control" required name="phone" maxlength="45" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
                                 <!-- Dirección -->
-                                <input class="col-lg-12 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                                <input class="col-lg-12 form-control mt-3" required name="address" maxlength="200" type="text" placeholder="Dirección" value="<?= $user->address ?>">
                             <?php else: ?>
                                 <!-- Nombre Completo -->
                                 <input class="col-lg-8 form-control" disabled="true" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
@@ -80,7 +80,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <?php if ($userProfileCode == 'ADM'): ?>
+                            <?php if ($userProfileCode == 'ADM' && $checkIfNaturalSupport < 0 ): ?>
                             <div class="row">
                                 <a href="<?= $this->Url->build('/', true) ?>users/assign-tutor/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
                             </div>

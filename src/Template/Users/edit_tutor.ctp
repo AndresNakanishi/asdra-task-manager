@@ -16,13 +16,13 @@
                             <input type="text" id="photo" name="photo" style="display: none">                            
                             <!-- Nombre Completo -->
                             <div class="form-group col-lg-12 d-flex justify-content-between">
-                              <input class="col-lg-7 form-control" required name="name" id="name" type="text" value="<?= $user->name ?>" placeholder="Nombre Completo (Requerido)">
+                              <input class="col-lg-7 form-control" required name="name" id="name" maxlength="50" type="text" value="<?= $user->name ?>" placeholder="Nombre Completo (Requerido)">
                             <!-- Teléfono -->
-                              <input class="col-lg-5 form-control" required name="phone" value="<?= $user->phone ?>" type="text" placeholder="Teléfono (Requerido)">
+                              <input class="col-lg-5 form-control" required name="phone" maxlength="45" value="<?= $user->phone ?>" type="text" placeholder="Teléfono (Requerido)">
                             </div>
                             <!-- Dirección -->
                             <div class="form-group col-lg-12">
-                              <input class="col-lg-12 form-control mt-3" required name="address" type="text" value="<?= $user->address ?>" placeholder="Dirección (Requerido)">
+                              <input class="col-lg-12 form-control mt-3" required name="address" type="text" maxlength="200" value="<?= $user->address ?>" placeholder="Dirección (Requerido)">
                             </div>
                             <!-- Usuarios -->
                             <div class="form-group col-lg-12">

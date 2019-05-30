@@ -257,7 +257,9 @@ class UsersController extends AppController
             'conditions' => ['supervisors.supervisor_id = users.user_id']
         ]])->order(['supervisors.rol' => 'DESC'])->all();
 
-        $this->set(compact('user','supervisors'));
+        $checkIfNaturalSupport = $supTable->find('all', ['conditions' => ['person_id' => $user->user_id, 'rol' => 'CHF']])->count();
+
+        $this->set(compact('user','supervisors','checkIfNaturalSupport'));
     }
 
 
@@ -350,13 +352,17 @@ class UsersController extends AppController
         // Set Layout
         $this->viewBuilder()->setLayout('asdra-layout');
         
-        if ($this->Auth->user('user_type') !== 'ADM') {
-            return $this->redirect(['action' => 'initInCharge']);
-        }
         // Get User
         $user = $this->Users->get($id);
         $tutors = $this->Users->find('all', ['conditions' => ['user_type' => 'TUT']])->all();
         $companies = TableRegistry::get('companies')->find('list')->order(['company_name' => 'ASC']);
+        $checkIfNaturalSupport = TableRegistry::get('supervisors')->find('all', ['conditions' => ['person_id' => $user->user_id, 'rol' => 'CHF']])->count();
+
+        if ($this->Auth->user('user_type') !== 'ADM' || $checkIfNaturalSupport > 0) {
+            $this->Flash->error(__("No se puede asignar más de un apoyo natural por usuario."));            
+            return $this->redirect( Router::url( $this->referer(), true ) );
+        }
+        
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             $rol = $data['rol'];
@@ -408,7 +414,11 @@ class UsersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
 
-
+            // Check If letters are in the string
+            if (preg_match("/[a-zA-Z]/i", $data['phone'])) {
+                $this->Flash->error(__('El número de teléfono <b>no puede tener caracteres (letras).</b>'));            
+                return $this->redirect( Router::url( $this->referer(), true ) );
+            }
             // If password
             if (isset($data['password']) and $data['password'] == '') {
                 unset($data['password']);

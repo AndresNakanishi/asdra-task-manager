@@ -16,11 +16,11 @@ $this->assign('title', $title);?>
                               <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                               <input type="text" id="photo" name="photo" style="display: none">
                               <!-- Nombre Completo -->
-                              <input class="col-lg-7 form-control" required name="name" id="name" type="text" placeholder="Nombre Completo (Requerido)">
+                              <input class="col-lg-7 form-control" required name="name" maxlength="50" id="name" type="text" placeholder="Nombre Completo (Requerido)">
                               <!-- Teléfono -->
-                              <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono (Requerido)">
+                              <input class="col-lg-4 form-control" required name="phone" maxlength="45" type="text" placeholder="Teléfono (Requerido)">
                               <!-- Dirección -->
-                              <input class="col-lg-11 form-control mt-3" required name="address" type="text" placeholder="Dirección (Requerido)">
+                              <input class="col-lg-11 form-control mt-3" required name="address" maxlength="200" type="text" placeholder="Dirección (Requerido)">
                           <?= $this->Form->end() ?>
                         </div>
                         <div class="col-lg-12" style="margin-top: 30px" id="avatar-div">

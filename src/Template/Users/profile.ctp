@@ -13,11 +13,11 @@
                               <input type="text" id="avatar-code" name="avatar-code" style="display: none">
                               <input type="text" id="photo" name="photo" style="display: none">         
                               <!-- Nombre Completo -->
-                              <input class="col-lg-7 form-control" required name="name" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
+                              <input class="col-lg-7 form-control" required name="name" type="text" maxlength="50" placeholder="Nombre Completo" value="<?= $user->name ?>">
                               <!-- Teléfono -->
-                              <input class="col-lg-4 form-control" required name="phone" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                              <input class="col-lg-4 form-control" required name="phone" type="text" maxlength="45" placeholder="Teléfono" value="<?= $user->phone ?>">
                               <!-- Dirección -->
-                              <input class="col-lg-11 form-control mt-3" required name="address" type="text" placeholder="Dirección" value="<?= $user->address ?>">
+                              <input class="col-lg-11 form-control mt-3" required name="address" type="text" maxlength="200" placeholder="Dirección" value="<?= $user->address ?>">
                           <?= $this->Form->end() ?>
                         </div>
                         <!-- Imagen -->
