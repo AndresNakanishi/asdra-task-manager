@@ -11,7 +11,7 @@ $this->assign('title', $title);?>
                         <?= $this->Form->create($company, ['type' => 'file', 'id' => 'form', 'class' => 'profileContainer-form d-flex flex-wrap align-content-center']) ?>
                             <div class="form-group col-lg-12">
                                 <label for="company_name"></label>
-                                <input class="col-lg-12 form-control mt-3" required name="company_name" type="text" placeholder="Nombre de la Compañía">
+                                <input class="col-lg-12 form-control mt-3" required name="company_name" type="text" maxlength="25"placeholder="Nombre de la Compañía">
                             </div>
                         <?= $this->Form->end() ?>
                     </div>

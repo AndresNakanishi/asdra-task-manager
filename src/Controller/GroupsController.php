@@ -26,6 +26,8 @@ class GroupsController extends AppController
 
         $asdra = TableRegistry::get('companies')->find('all', ['conditions' => ['company_name' => 'ASDRA']])->first();
         
+        /*
+        ** Código anterior, puede que vuelva porque creo que el administrador de ASDRA debería ver todo
         if ($asdra->company_id == $this->Auth->user('company_id')) {
             $groups = $this->Groups->find('all', ['contain' => ['Companies']])->all();
         } else {
@@ -35,6 +37,13 @@ class GroupsController extends AppController
             ])
             ->all();
         }
+        */
+
+        $groups = $this->Groups->find('all', ['contain' => ['Companies']])
+        ->where([
+            'Groups.company_id' => $this->Auth->user('company_id')
+        ])
+        ->all();
 
         $this->set(compact('groups'));
     }
