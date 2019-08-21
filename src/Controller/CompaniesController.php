@@ -123,7 +123,16 @@ class CompaniesController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $company = $this->Companies->get($id);
-        if ($this->Companies->delete($company)) {
+        $deleted = false;
+
+        try {
+            $deleteUsers = $this->deleteUsers($id);
+            $deleted = $this->Companies->delete($company);
+        } catch (Exception $e) {
+            
+        }
+
+        if ($deleted) {
             $this->Flash->success(__('La compañia ha sido eliminada.'));
         } else {
             $this->Flash->error(__('La compañia no ha sido eliminada. Intente más tarde...'));
@@ -147,5 +156,38 @@ class CompaniesController extends AppController
             ->toList();
 
         return $companies;
+    }
+
+    private function deleteUsers($company_id)
+    {
+        // Borro Relaciones de Tutores con Personas
+
+        $supResult = $this->deleteSupervisors($company_id);
+         
+        // Borro Usuarios
+        $usersTable = TableRegistry::get('users');
+        $deleteUsersQuery = $usersTable->query();
+        $usersResult = $deleteUsersQuery->delete()
+            ->where(['company_id' => $company_id])
+            ->execute();
+
+        if ($supResult && $usersResult) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function deleteSupervisors($company_id){
+        $supTable = TableRegistry::get('supervisors');
+        $usersTable = TableRegistry::get('users');
+        $users = $usersTable->find('all', ['conditions' => ['user_type' => 'TUT', 'company_id' => $company_id]])->all();
+        
+        foreach ($users as $user) {
+            $delSup = $supTable->query();
+            $delSup->delete()->where(['supervisor_id' => $user->user_id])->execute(); 
+        }
+
+        return true;
     }
 }
