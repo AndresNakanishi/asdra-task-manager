@@ -35,7 +35,7 @@
 		                                    'Eliminar', 
 		                                    ['controller' => 'steps', 'action' => 'delete', $step->step_id], 
 		                                    [
-		                                        'confirm' => __('¿Está seguro que desea eliminar la tarea "{0}"?', $task->description_1),
+		                                        'confirm' => __('¿Está seguro que desea eliminar el paso "{1}" de la tarea "{0}"?', $task->description_1, $step->title),
 		                                        'style' => 'padding-right: 10px;',
 		                                        'class' => 'btn btn-sm btn-danger border-dark'
 		                                    ]

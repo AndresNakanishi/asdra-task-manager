@@ -278,6 +278,11 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             // Image            
+                // Check If letters are in the string
+                if (preg_match("/[a-zA-Z]/i", $data['phone'])) {
+                    $this->Flash->error(__('El número de teléfono <b>no puede tener caracteres (letras).</b>'));            
+                    return $this->redirect( Router::url( $this->referer(), true ) );
+                }
                 $img = $this->request->data('avatar-code');
                 $img = str_replace('data:image/png;base64,', '', $img);
                 $img = str_replace(' ', '+', $img);

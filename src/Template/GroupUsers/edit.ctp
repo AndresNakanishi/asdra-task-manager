@@ -111,37 +111,28 @@ $days = [
 	});
 
 
-	// Time
 
-	// Start Time
 	$(function () {
+		// Time
+		// Start Time
         $('#start-time').datetimepicker({
             format:'HH:mm'
         });
-    });
-
-    // End Time
-	$(function () {
-        $('#end-time').datetimepicker({
+    	// End Time
+	    $('#end-time').datetimepicker({
             format:'HH:mm'
         });
-    });
-
-	// End Time
-
-	// Date
-
-	// Start Time
-	$(function () {
+		// End Time
+		// Date
+		// Start Time
         $('#start-date').datetimepicker({
-        	format: 'DD/MM/YYYY'
-        });
-    });
-
-    // End Time
-	$(function () {
-        $('#end-date').datetimepicker({
+        	default: false,
             format: 'DD/MM/YYYY'
+        });
+
+        $('#end-date').datetimepicker({
+            default: false,
+            format: 'L'
         });
     });
 

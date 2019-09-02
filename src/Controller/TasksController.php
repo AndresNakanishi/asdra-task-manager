@@ -45,18 +45,22 @@ class TasksController extends AppController
         $tasks = $this->Tasks->find('all', ['conditions' => ['group_id' => $id]])->count();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
+            // Check Task
+            $order = $this->checkTaskOrder($id, $data['task_order']);
             $data['required'] = 1;
             $data['priority'] = 1;
             $data['group_id'] = $id;
             $data['description_1'] = strtoupper($data['description_1']);
             $data['description_2'] = strtoupper($data['description_2']);
             $task = $this->Tasks->patchEntity($task, $data);
-            if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('<b>La tarea fue configurada correctamente!</b>'));
-
-                return $this->redirect(['controller' => 'Groups', 'action' => 'view',$id]);
+            if (!$order) {
+                if ($this->Tasks->save($task)) {
+                    $this->Flash->success(__('<b>La tarea fue configurada correctamente!</b>'));
+                    return $this->redirect(['controller' => 'Groups', 'action' => 'view',$id]);
+                } else {
+                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                }
             }
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
         $this->set(compact('task','tasks'));
     }
@@ -72,20 +76,24 @@ class TasksController extends AppController
     {
         $this->viewBuilder()->setLayout('asdra-layout');
         $task = $this->Tasks->get($id, [
-            'contain' => []
+            'contain' => ['Groups']
         ]);
         $tasks = $this->Tasks->find('all', ['conditions' => ['group_id' => $task->group_id]])->count();
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
+            // Check Task
+            $order = $this->checkTaskOrder($task->group->group_id, $data['task_order']);
             $data['description_1'] = strtoupper($data['description_1']);
             $data['description_2'] = strtoupper($data['description_2']);
             $task = $this->Tasks->patchEntity($task, $data);
-            if ($this->Tasks->save($task)) {
-                $this->Flash->success(__('<b>Los datos se guardaron correctamente!</b>'));
-
-                return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group_id]);
+            if (!$order) {
+                if ($this->Tasks->save($task)) {
+                    $this->Flash->success(__('<b>Los datos se guardaron correctamente!</b>'));
+                    return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group->group_id]);
+                } else {
+                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                }
             }
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
         $this->set(compact('task','tasks'));
     }
@@ -118,4 +126,17 @@ class TasksController extends AppController
 
         return $this->redirect(['controller' => 'Groups', 'action' => 'view',$task->group_id]);
     }
+
+    private function checkTaskOrder($group_id, $task_order)
+    {
+        $task_order = (int)$task_order; 
+        $task = $this->Tasks->find('all', ['conditions' => ['group_id' => $group_id, 'task_order' => $task_order]])->first();        
+        if ($task) {
+            $this->Flash->success(__("<b>El paso $task_order ya existe!</b>"));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

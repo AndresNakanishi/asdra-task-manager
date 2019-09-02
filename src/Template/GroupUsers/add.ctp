@@ -2,8 +2,8 @@
 $this->assign('title', 'Nuevo Grupo de Tareas');
 
 $repetition = [
-	"SEM" => "Repetición Semanal",
-	"MES" => "Repetición Mensual"
+	"MES" => "Repetición Mensual",
+	"SEM" => "Repetición Semanal"
 ];
 
 $days = [
@@ -15,7 +15,6 @@ $days = [
 	'VI' => 'Viernes'
 ];
 ?>
-
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
@@ -35,9 +34,12 @@ $days = [
 			        </div>
 			        <div class="form-group">
 			        	<label for="repetition">Repetición:</label>
-						<?= $this->Form->select('repetition', $repetition, ['default' => '', 'class' => 'form-control']);?>
+						<?= $this->Form->select('repetition', $repetition, ['class' => 'form-control', 'id' => 'repetition']);?>
 			        </div>
-			        <div class="form-group">
+			        <div class="alert alert-success" id="alert" role="alert">
+					  Las tareas mensuales se ejecutan sobre la <b>fecha desde</b>.
+					</div>
+			        <div class="form-group" id="days">
 			        	<label for="rep_days">Días:</label>
 						<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days']);?>
 			        </div>
@@ -71,7 +73,7 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="start-date">Desde:</label>
 				        	<div class="input-group date" id="start-date" data-target-input="nearest">
-			                    <input type="text" name="start_date" class="form-control datetimepicker-input" data-target="#start-date" placeholder="DD/MM/AAAA" />
+			                    <input type="text" name="start_date" class="form-control datetimepicker-input" data-target="#start-date" placeholder="DD/MM/AAAA" required/>
 			                    <div class="input-group-append" data-target="#start-date" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
 			                    </div>
@@ -100,6 +102,40 @@ $days = [
     </div>
 </div>
 <script>
+
+	/*
+	let repetition = document.querySelector("#repetition");
+	let alert = document.querySelector("#alert");
+    let days = document.querySelector("#days");
+
+	let index = document.querySelector("#repetition").selectedIndex; 
+    let value = document.querySelector("#repetition").options.item(index).text;
+    checkstatus(value);
+    
+    repetition.addEventListener("change", () => {
+        index = document.querySelector("#repetition").selectedIndex; 
+        value = document.querySelector("#repetition").options.item(index).text;
+        checkstatus(value);
+    });
+
+    function checkstatus(value){
+        switch(value) {
+            case 'Repetición Semanal':
+                days.style.display = 'block';
+                alert.style.display = 'none';
+                break;
+            case 'Repetición Mensual':
+                days.style.display = 'none';
+                alert.style.display = 'block';
+                break;
+            default:
+                days.style.display = 'none';
+                alert.style.display = 'block';
+        }
+    }
+	*/
+
+
 	// Select 2
 	$(document).ready(function() {
 	    $('.group_id_select').select2();
@@ -127,9 +163,6 @@ $days = [
 	        $('#end-time').datetimepicker({
 	            format:'HH:mm'
 	        });
-	    });
-	    $("#end-time").on("change.datetimepicker", function (e) {
-	        $('#start-time').datetimepicker('maxDate', e.date);
 	    });
 
 	// End Time

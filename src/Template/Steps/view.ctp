@@ -5,8 +5,7 @@
             <div class="card-header">
 	            <h3>
 	            	<b>
-	            		<?= $task->group->title ?>: <?= $task->description_1 ?> <br>
-	            		<small>Paso <?= $step->step_order ?>: <?= $step->title ?></small>
+	            		Paso <?= $step->step_order ?>: <?= $step->title ?>
 	            	</b>
 	            </h3>
             </div>

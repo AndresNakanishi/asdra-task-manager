@@ -5,6 +5,8 @@ use App\Controller\AppController;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\ConnectionManager;
 use Cake\ORM\TableRegistry;
+use Cake\I18n\Time;
+
 
 /**
  * GroupUsers Controller
@@ -44,21 +46,34 @@ class GroupUsersController extends AppController
             // Arrange Date && Time
             $data['start_time'] = date('H:i:s',strtotime($data['start_time']));
             $data['end_time'] = date('H:i:s',strtotime($data['end_time']));
-            $data['start_date'] = date('Y-m-d 00:00:00',strtotime($data['start_date']));
-            if ($data['end_date'] !== '') {
-                $data['end_date'] = date('Y-m-d 00:00:00',strtotime($data['end_date']));
-            } else {
-                $data['end_date'] = null;
-            }
-            $groupUser = $this->GroupUsers->patchEntity($groupUser, $data);
+            $data['start_date'] = $this->getDate($data['start_date']);
+            $data['end_date'] = $this->getDate($data['end_date']);
 
-            if ($this->GroupUsers->save($groupUser)) {
-                $this->Flash->success(__('El grupo de tareas fue guardado correctamente.'));
+            if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($user_id, $group_id , $data['start_date']) ) {
+                try {   
+                    $supTable = TableRegistry::get('group_users');
+                    $insert = $supTable->query();
+                    $insert->update()
+                    ->set([
+                        'date_from' => $data['start_date'],
+                        'date_to' => $data['end_date'],
+                        'start_time' => $data['start_time'],
+                        'end_time' => $data['end_time'],
+                        'repetition' => $data['repetition'],
+                        'rep_days' => $data['rep_days']
+                    ])
+                    ->where(['group_id'=> $group_id, 'user_id' => $user_id])
+                    ->execute();
+
+                    $this->Flash->success(__('El grupo de tareas fue guardado correctamente.'));
+                    return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
+                } catch (Exception $e) {
+                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                }
             } else {
-                // Fail
-                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                $this->Flash->error(__('La fecha <b>Hasta</b> no puede ser anterior a la fecha <b>Desde</b>. O esta tarea, ya fue asignada y comienza el mismo día.'));  
             }
-            return $this->redirect(['action' => 'view',$user_id, $groupUser->group_type_id]);
+
         }
 
         $this->set(compact('groupUser','selected','user_id'));
@@ -89,19 +104,8 @@ class GroupUsersController extends AppController
             // Time
 
             // Date
-            $data['start_date'] = date('Y-m-d 00:00:00',strtotime($data['start_date']));
-            $hola = explode('/',$data['end_date']);
-            $end = '';
-            foreach ($hola as $key => $value) {
-                $end = $end.$value.'-';
-            }
-            $end = substr($end, 0, -1);
-            $data['end_date'] = $end;
-            if ($data['end_date'] !== '') {
-                $data['end_date'] = date('Y-m-d 00:00:00',strtotime($data['end_date']));
-            } else {
-                $data['end_date'] = null;
-            }
+            $data['start_date'] = $this->getDate($data['start_date']);
+            $data['end_date'] = $this->getDate($data['end_date']);
 
             if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($data['user_id'], $data['group_id'] , $data['start_date']) ) {
                 try {
@@ -196,17 +200,44 @@ class GroupUsersController extends AppController
         return $response;
     }
 
+    private function getDate($date){
+        if ($date !== '') {
+            $dt = Time::createFromFormat(
+                'd/m/Y',
+                $date,
+            );
+            $ts = strtotime($dt);
+            $dt = date('Y-m-d 00:00:00',$ts); 
+            return $dt;
+        } else {
+            return null;
+        }
+    }
+
+    private function dateTo($date){
+        if ($date !== '') {
+            $dt = Time::createFromFormat(
+                'm/d/Y',
+                $date,
+            );
+            $ts = strtotime($dt);
+            $dt = date('Y-m-d 00:00:00',$ts); 
+            return $dt;
+        } else {
+            return null;
+        }
+    }
+
     // True if available
     // False if not available
     private function checkIfAvailable($group_id, $user_id, $start_date)
     {
         $available = $this->GroupUsers->find('all')->where([
-                        'group_id' => $group_id,
-                        'user_id' => $user_id,
-                        'date_from' => $start_date  
-                    ])->first();
+            'group_id' => $group_id
+        ])->first();
 
-        if ($available->user_id) {
+        dd($available, $group_id, $user_id, $start_date);
+        if ($available->user_id !== null) {
             return false;
         } else {
             return true;

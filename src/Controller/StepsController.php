@@ -55,6 +55,8 @@ class StepsController extends AppController
         $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $id]])->count();
         if ($this->request->is('post')) {
             $data = $this->request->getData();
+            // Check Order
+            $order = $this->checkStepOrder($id, $data['step_order']);
             $data['required'] = 1;
             $data['task_id'] = $id;
             if ($data['photo'] == '' && $data['gif']['tmp_name'] == '') {
@@ -79,12 +81,14 @@ class StepsController extends AppController
             }            $data['title'] = strtoupper($data['title']);
             $data['sub_title'] = strtoupper($data['sub_title']);
             $step = $this->Steps->patchEntity($step, $data);
-            if ($this->Steps->save($step)) {
-                $this->Flash->success(__('<b>El paso fue configurado correctamente!</b>'));
-
-                return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$id]);
+            if (!$order) {
+                if ($this->Steps->save($step)) {
+                    $this->Flash->success(__('<b>El paso fue configurado correctamente!</b>'));
+                    return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$id]);
+                } else {
+                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                }
             }
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
         $this->set(compact('step', 'steps'));
     }
@@ -99,10 +103,14 @@ class StepsController extends AppController
     public function edit($id = null)
     {
         $this->viewBuilder()->setLayout('asdra-layout');
-        $step = $this->Steps->get($id);
+        $step = $this->Steps->get($id, [
+            'contain' => ['Tasks']
+        ]);
         $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $step->task_id]])->count();
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
+            // Check Order
+            $order = $this->checkStepOrder($step->task->task_id, $data['step_order']);
             if ($data['photo'] == '' && $data['gif']['tmp_name'] == '') {
                 unset($data['photo']);
                 unset($data['gif']);
@@ -126,12 +134,14 @@ class StepsController extends AppController
             $data['title'] = strtoupper($data['title']);
             $data['sub_title'] = strtoupper($data['sub_title']);
             $step = $this->Steps->patchEntity($step, $data);
-            if ($this->Steps->save($step)) {
-                $this->Flash->success(__('<b>Los datos han sido guardados correctamente!</b>'));
-
-                return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
+            if (!$order) {
+                if ($this->Steps->save($step)) {
+                    $this->Flash->success(__('<b>Los datos han sido guardados correctamente!</b>'));
+                    return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
+                } else {
+                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
+                }
             }
-            $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
         }
         $this->set(compact('step', 'steps'));
     }
@@ -162,6 +172,19 @@ class StepsController extends AppController
         }
         
         return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
+    }
+
+
+    private function checkStepOrder($task_id, $step_order)
+    {
+        $step_order = (int)$step_order; 
+        $step = $this->Steps->find('all', ['conditions' => ['task_id' => 15, 'step_order' => $step_order]])->first();    
+        if ($step) {
+            $this->Flash->success(__("<b>El paso $step_order ya existe!</b>"));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Set or Update User Photo / Avatar

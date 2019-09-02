@@ -18,7 +18,7 @@
                                 <!-- Nombre Completo -->
                                 <input class="col-lg-8 form-control" required name="name" maxlength="50" type="text" placeholder="Nombre Completo" value="<?= $user->name ?>">
                                 <!-- Teléfono -->
-                                <input class="col-lg-4 form-control" required name="phone" maxlength="45" type="text" placeholder="Teléfono" value="<?= $user->phone ?>">
+                                <input class="col-lg-4 form-control" required name="phone" maxlength="45" type="text" placeholder="Teléfono (Requerido)" value="<?= $user->phone ?>">
                                 <!-- Dirección -->
                                 <input class="col-lg-12 form-control mt-3" required name="address" maxlength="200" type="text" placeholder="Dirección" value="<?= $user->address ?>">
                             <?php else: ?>
@@ -32,7 +32,7 @@
                         <?= $this->Form->end() ?>
                             <div class="row mb-3 mt-3">
                                 <div class="col-lg-12">
-                                    Su código de activación de <?= $user->name ?> es: <strong><?= $user->token ?></strong>
+                                    Su código de activación es: <strong><?= $user->token ?></strong>
                                 </div>
                             </div>
                             <div class="tutorTable mt-2">    
@@ -80,7 +80,7 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <?php if ($userProfileCode == 'ADM' && $checkIfNaturalSupport < 0 ): ?>
+                            <?php if ($userProfileCode == 'ADM' && $checkIfNaturalSupport == 0 ): ?>
                             <div class="row">
                                 <a href="<?= $this->Url->build('/', true) ?>users/assign-tutor/<?= $user->user_id?>" class="btn btn-primary border-dark ml-3"><i class="fas fa-plus-circle"></i> Agregar Tutores</a>
                             </div>
