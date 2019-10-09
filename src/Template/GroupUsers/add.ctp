@@ -39,9 +39,9 @@ $days = [
 			        <div class="alert alert-success" id="alert" role="alert">
 					  Las tareas mensuales se ejecutan sobre la <b>fecha desde</b>.
 					</div>
-			        <div class="form-group" id="days">
+			        <div class="form-group">
 			        	<label for="rep_days">Días:</label>
-						<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days']);?>
+						<?= $this->Form->select('rep_days[]', $days, ['multiple' ,'class' => 'form-control rep-days', "id" => "days"]);?>
 			        </div>
 			        <div class="row">
 			        	<div class="col-lg-12">
@@ -103,7 +103,6 @@ $days = [
 </div>
 <script>
 
-	/*
 	let repetition = document.querySelector("#repetition");
 	let alert = document.querySelector("#alert");
     let days = document.querySelector("#days");
@@ -121,19 +120,18 @@ $days = [
     function checkstatus(value){
         switch(value) {
             case 'Repetición Semanal':
-                days.style.display = 'block';
+                days.disabled = false;
                 alert.style.display = 'none';
                 break;
             case 'Repetición Mensual':
-                days.style.display = 'none';
+                days.disabled = true;
                 alert.style.display = 'block';
                 break;
             default:
-                days.style.display = 'none';
+                days.disabled = true;
                 alert.style.display = 'block';
         }
     }
-	*/
 
 
 	// Select 2
@@ -179,11 +177,16 @@ $days = [
 	    // End Time
 		$(function () {
 	        $('#end-date').datetimepicker({
-	            format: 'DD/MM/YYYY'
+	            format: 'DD/MM/YYYY',
+	            useCurrent: false
 	        });
 	    });
-	    $("#end-date").on("change.datetimepicker", function (e) {
-	        $('#start-date').datetimepicker('maxDate', e.date);
-	    });
+
+		$("#start-date").on("change.datetimepicker", function (e) {
+            $('#end-date').datetimepicker('minDate', e.date);
+        });
+        $("#end-date").on("change.datetimepicker", function (e) {
+            $('#start-date').datetimepicker('maxDate', e.date);
+        });
 
 </script>

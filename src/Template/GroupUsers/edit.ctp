@@ -32,7 +32,12 @@ $days = [
 			        	</div>
 				        <div class="form-group col-lg-12">
 				        	<label for="repetition">Repetición:</label>
-							<?= $this->Form->select('repetition', $repetition, ['default' => '', 'class' => 'form-control']);?>
+							<?= $this->Form->select('repetition', $repetition, ['default' => '', 'class' => 'form-control', 'id' => 'repetition']);?>
+				        </div>
+				        <div class="form-group col-lg-12" id="alert">
+					        <div class="alert alert-success" role="alert">
+							  Las tareas mensuales se ejecutan sobre la <b>fecha desde</b>.
+							</div>
 				        </div>
 				        <div class="form-group col-lg-12">
 				        	<label for="rep_days">Días:</label>
@@ -77,11 +82,8 @@ $days = [
 				        <div class="form-group col-lg-6">
 				        	<label for="end-date">Hasta:</label>
 				        	<div class="input-group date" id="end-date" data-target-input="nearest">
-				        		<?php if ($groupUser->date_to !== null): ?>
-			                    	<input type="text" name="end_date" class="form-control datetimepicker-input" data-target="#end-date" value="<?= date('d/m/Y', strtotime($groupUser->date_to)); ?>" placeholder="DD/MM/AAAA"/>
-				        		<?php else: ?>
-			                    	<input type="text" name="end_date" class="form-control datetimepicker-input" data-target="#end-date" placeholder="DD/MM/AAAA"/>
-				        		<?php endif ?>
+			                    	<input type="text" name="end_date" class="form-control datetimepicker-input" data-target="#end-date" value="<?php if($groupUser->date_to !== null){ echo date('d/m/Y', strtotime($groupUser->date_to)); }?>" placeholder="DD/MM/AAAA"/>
+				        	
 			                    <div class="input-group-append" data-target="#end-date" data-toggle="datetimepicker">
 			                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
 			                    </div>
@@ -101,6 +103,7 @@ $days = [
     </div>
 </div>
 <script>
+
 	// Select 2
 	$(document).ready(function() {
 	    $('.group_id_select').select2();
@@ -110,7 +113,31 @@ $days = [
 		});
 	});
 
+	let repetition = document.querySelector("#repetition");
+	let alert = document.querySelector("#alert");
 
+	let index = document.querySelector("#repetition").selectedIndex; 
+    let value = document.querySelector("#repetition").options.item(index).text;
+    checkstatus(value);
+    
+    repetition.addEventListener("change", () => {
+        index = document.querySelector("#repetition").selectedIndex; 
+        value = document.querySelector("#repetition").options.item(index).text;
+        checkstatus(value);
+    });
+
+    function checkstatus(value){
+        switch(value) {
+            case 'Repetición Semanal':
+                alert.style.display = 'none';
+                break;
+            case 'Repetición Mensual':
+                alert.style.display = 'block';
+                break;
+            default:
+                alert.style.display = 'block';
+        }
+    }
 
 	$(function () {
 		// Time
@@ -127,13 +154,14 @@ $days = [
 		// Start Time
         $('#start-date').datetimepicker({
         	default: false,
+        	locale: 'es',
             format: 'DD/MM/YYYY'
         });
-
-        $('#end-date').datetimepicker({
-            default: false,
-            format: 'L'
+		$('#end-date').datetimepicker({
+        	default: false,
+        	useCurrent: false,
+        	locale: 'es',
+            format: 'DD/MM/YYYY'
         });
     });
-
 </script>

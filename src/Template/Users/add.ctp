@@ -8,7 +8,7 @@ $this->assign('title', $title);?>
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body profileContainer">
-                <h4 class="profileContainer-title">Nuevo de Perfil</h4>
+                <h4 class="profileContainer-title">Nueva persona a cargo</h4>
                 <div class="profileContainer-content mt-3">
                     <div class="profileContainerEdit">    
                         <div>        

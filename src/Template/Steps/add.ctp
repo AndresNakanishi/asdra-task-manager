@@ -13,7 +13,7 @@ $ext = [
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">
-	            <h3><b>Agregar Paso</b></h3>
+	            <h3><b>Agregar Paso a: <?= $taskTitle ?></b></h3>
             </div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center">	
 		        <?= $this->Form->create($step, ['class' => 'col-lg-9','id' => 'addForm', 'type' => 'file']) ?>
@@ -40,21 +40,6 @@ $ext = [
 			                    'text' => 'Subtítulo:',
 			                ],
 			                'placeholder' => 'Subtítulo',
-			                'autocomplete' => 'off'
-			            ]) ?>
-			        </div>
-			        <div class="form-group">
-			            <?= $this->Form->control('step_order', [
-			                'class' => 'form-control',
-			                'label' => [
-			                    'class' => 'control-label',
-			                    'text' => 'Orden:',
-			                ],
-			                'required',
-			                'placeholder' => 'Orden (Cantidad de Pasos: '.($steps + 1).')',
-			                'value' => $steps + 1,
-                      'min' => 1,
-			                'max' => $steps + 1,
 			                'autocomplete' => 'off'
 			            ]) ?>
 			        </div>
@@ -113,7 +98,7 @@ $ext = [
                 	'form' => 'addForm',
                 	'id' => 'accept-button'
             	]) ?>
-				<a href="<?= $this->request->referer(); ?>" class="btn btn-danger border-dark">Cancelar</a>  
+				<a href="<?= $this->Url->build("/tasks/view/$tid", true) ?>" class="btn btn-danger border-dark">Cancelar</a>  
             </div>
         </div>
     </div>

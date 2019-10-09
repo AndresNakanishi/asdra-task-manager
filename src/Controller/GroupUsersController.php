@@ -107,7 +107,7 @@ class GroupUsersController extends AppController
             $data['start_date'] = $this->getDate($data['start_date']);
             $data['end_date'] = $this->getDate($data['end_date']);
 
-            if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($data['user_id'], $data['group_id'] , $data['start_date']) ) {
+            if ( ($data['end_date'] == null || ( strtotime($data['end_date']) > strtotime($data['start_date']) )) && $this->checkIfAvailable($data['group_id'], $data['user_id'] , $data['start_date']) ) {
                 try {
                     $supTable = TableRegistry::get('group_users');
                     $insert = $supTable->query();
@@ -233,10 +233,11 @@ class GroupUsersController extends AppController
     private function checkIfAvailable($group_id, $user_id, $start_date)
     {
         $available = $this->GroupUsers->find('all')->where([
-            'group_id' => $group_id
+            'group_id' => $group_id,
+            'user_id' => $user_id,
+            'date_from' => $start_date
         ])->first();
 
-        dd($available, $group_id, $user_id, $start_date);
         if ($available->user_id !== null) {
             return false;
         } else {

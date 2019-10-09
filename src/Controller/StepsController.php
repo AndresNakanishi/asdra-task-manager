@@ -53,9 +53,13 @@ class StepsController extends AppController
         $this->viewBuilder()->setLayout('asdra-layout');
         $step = $this->Steps->newEntity();
         $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $id]])->count();
+        $task = TableRegistry::get('tasks')->find('all', ['conditions' => ['task_id' => $id]])->first();
+        $taskTitle = $task->description_1; 
+        $tid = $id;
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             // Check Order
+            $data['step_order'] = $steps + 1;
             $order = $this->checkStepOrder($id, $data['step_order']);
             $data['required'] = 1;
             $data['task_id'] = $id;
@@ -90,7 +94,7 @@ class StepsController extends AppController
                 }
             }
         }
-        $this->set(compact('step', 'steps'));
+        $this->set(compact('step', 'tid','taskTitle'));
     }
 
     /**
@@ -107,10 +111,17 @@ class StepsController extends AppController
             'contain' => ['Tasks']
         ]);
         $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $step->task_id]])->count();
+        $task = TableRegistry::get('tasks')->find('all', ['conditions' => ['task_id' => $step->task_id]])->first();
+        $taskTitle = $task->description_1;
+        $tid = $step->task_id;
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
             // Check Order
             $order = $this->checkStepOrder($step->task->task_id, $data['step_order']);
+            // Order == true means that there's been a change
+            if ($order == true) {
+                $this->orderAllRemainingStepsOnUpdate($step->step_order, $data['step_order'], $step->task_id);
+            }
             if ($data['photo'] == '' && $data['gif']['tmp_name'] == '') {
                 unset($data['photo']);
                 unset($data['gif']);
@@ -134,16 +145,14 @@ class StepsController extends AppController
             $data['title'] = strtoupper($data['title']);
             $data['sub_title'] = strtoupper($data['sub_title']);
             $step = $this->Steps->patchEntity($step, $data);
-            if (!$order) {
-                if ($this->Steps->save($step)) {
-                    $this->Flash->success(__('<b>Los datos han sido guardados correctamente!</b>'));
-                    return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
-                } else {
-                    $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
-                }
+            if ($this->Steps->save($step)) {
+                $this->Flash->success(__('<b>Los datos han sido guardados correctamente!</b>'));
+                return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
+            } else {
+                $this->Flash->error(__('Hubo un error! Intente más tarde por favor...'));
             }
         }
-        $this->set(compact('step', 'steps'));
+        $this->set(compact('step', 'steps','tid','taskTitle'));
     }
 
     /**
@@ -160,7 +169,8 @@ class StepsController extends AppController
         $deleted = false;
         
         try {
-            $this->Steps->delete($step);
+            $reorder = $this->orderAllRemainingStepsOnDelete($step);
+            $deleted = $this->Steps->delete($step);
         } catch(\Exception $e) {
             
         }
@@ -174,13 +184,42 @@ class StepsController extends AppController
         return $this->redirect(['controller' => 'Tasks', 'action' => 'view',$step->task_id]);
     }
 
+    private function orderAllRemainingStepsOnDelete($step)
+    {
+        $step_order = $step->step_order;
 
+        $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $step->task_id, "step_order > $step_order"]])->all();
+
+        foreach ($steps as $step) {
+            $step->step_order -= 1; 
+            $this->Steps->save($step);
+        }
+
+        return true;
+    }
+
+    private function orderAllRemainingStepsOnUpdate($old, $new, $task_id)
+    {
+        if ($old > $new) {
+            $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $task_id, "step_order < $old", "step_order >= $new"]])->all();
+            foreach ($steps as $step) {
+                $step->step_order += 1; 
+                $this->Steps->save($step);
+            }
+        } else {
+            $steps = $this->Steps->find('all', ['conditions' => ['task_id' => $task_id, "step_order > $old", "step_order <= $new"]])->all();
+            foreach ($steps as $step) {
+                $step->step_order -= 1; 
+                $this->Steps->save($step);
+            }
+        }
+        return true;
+    }
     private function checkStepOrder($task_id, $step_order)
     {
         $step_order = (int)$step_order; 
-        $step = $this->Steps->find('all', ['conditions' => ['task_id' => 15, 'step_order' => $step_order]])->first();    
+        $step = $this->Steps->find('all', ['conditions' => ['task_id' => $task_id, 'step_order' => $step_order]])->first();    
         if ($step) {
-            $this->Flash->success(__("<b>El paso $step_order ya existe!</b>"));
             return true;
         } else {
             return false;
